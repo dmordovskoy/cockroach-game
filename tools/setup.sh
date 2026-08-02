@@ -47,6 +47,8 @@ echo
 echo "Done. Versions:"
 godot --version
 git lfs version | head -1
+gdformat --version 2>/dev/null || echo "gdformat: NOT INSTALLED"
+gdlint --version 2>/dev/null || echo "gdlint: NOT INSTALLED"
 echo
 echo "If addons/gdUnit4 is new, commit it:"
 echo "  git add addons project.godot && git commit -m 'chore: vendor gdUnit4'"
