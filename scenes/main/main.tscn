@@ -41,7 +41,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, 0)
 shape = SubResource("BoxShape3D_floor")
 
 [node name="Player" parent="." unique_id=636934858 instance=ExtResource("1_playerscene")]
-transform = Transform3D(1, 0, 0, 0, 0.9974222, -0.07175573, 0, 0.07175573, 0.9974222, 0.5585676, 0.8349098, -0.466681)
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=1792301300 node_paths=PackedStringArray("target")]
 transform = Transform3D(0.707107, -0.353553, 0.612372, 0, 0.866025, 0.5, -0.707107, -0.353553, 0.612372, 12, 10, 12)
