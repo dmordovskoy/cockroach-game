@@ -14,6 +14,9 @@ and CI gate every merge. Humans playtest and merge.
 
 1. Sync: `git checkout main && git pull`
 2. Branch: `feat/<issue#>-<slug>` (or `fix/`, `chore/`, `docs/` matching the issue type)
+   Then announce: `gh issue comment <issue#> --body "Started — branch <branch-name>"` and
+   `gh issue edit <issue#> --add-label in-progress` (the linked PR supersedes this later;
+   remove the label when the PR opens)
 3. Implement within scope. Your territory: `scenes/`, `scripts/`, `tests/`, `assets/`.
    **Never touch** `.github/`, `.claude/`, `tools/`, `docs/` unless the issue explicitly says so.
 4. Every gameplay feature gets at least one gdUnit4 test in `tests/<name>_test.gd`.
