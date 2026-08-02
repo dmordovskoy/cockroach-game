@@ -28,4 +28,4 @@ Godot 4.4+, GDScript only (no C#). 3D rendering, gameplay locked to the XZ plane
 
 - gdUnit4, suites in `tests/*_test.gd`; scene behavior via `scene_runner`
 - Every gameplay feature gets at least one scene_runner test
-- Headless run: `./addons/gdUnit4/runtest.sh -a tests`
+- Headless run: `./tools/test.sh` (sandboxed sessions: prefix with `HOME="$TMPDIR/gdhome"`)

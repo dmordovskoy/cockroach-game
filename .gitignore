@@ -5,6 +5,9 @@
 # Build output
 build/
 
+# gdUnit4 reports
+reports/
+
 # Blender backups
 *.blend1
 *.blend2

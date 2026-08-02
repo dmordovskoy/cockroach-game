@@ -34,7 +34,7 @@ Controls: WASD / arrow keys.
 gdUnit4 suites live in `tests/`. Run them from the editor (GdUnit panel) or headless:
 
 ```bash
-./addons/gdUnit4/runtest.sh -a tests
+./tools/test.sh
 ```
 
 ## Structure

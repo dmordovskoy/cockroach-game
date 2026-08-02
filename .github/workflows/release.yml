@@ -11,7 +11,7 @@ permissions:
   contents: write
 
 env:
-  GODOT_VERSION: "4.5"
+  GODOT_VERSION: "4.7.1"
 
 jobs:
   release:
