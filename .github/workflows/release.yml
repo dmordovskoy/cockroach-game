@@ -41,7 +41,16 @@ jobs:
       - name: Export macOS build
         run: |
           mkdir -p build
-          "$GODOT" --headless --export-release "macOS" "build/cockroach-game-macos.zip"
+          # Godot can abort on exit after a successful headless export; the artifact
+          # checks below and the smoke step are the real gates, not the exit code.
+          "$GODOT" --headless --export-release "macOS" "build/cockroach-game-macos.zip" \
+            || echo "::warning::Godot exited with $? — verifying artifact anyway"
+
+      - name: Verify export artifact
+        run: |
+          test -s build/cockroach-game-macos.zip
+          unzip -t build/cockroach-game-macos.zip > /dev/null
+          echo "Artifact OK: $(du -h build/cockroach-game-macos.zip | cut -f1)"
 
       - name: Smoke test the exported build
         run: |
