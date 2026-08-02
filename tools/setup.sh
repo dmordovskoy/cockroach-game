@@ -15,6 +15,13 @@ fi
 
 git lfs install
 
+# GDScript formatter/linter — same checks CI runs
+command -v pipx >/dev/null 2>&1 || brew install pipx
+if ! command -v gdformat >/dev/null 2>&1; then
+	pipx install "gdtoolkit==4.*"
+	pipx ensurepath >/dev/null 2>&1 || true
+fi
+
 # Vendor the gdUnit4 addon so both machines and CI share one version
 if [ ! -d addons/gdUnit4 ]; then
 	tag=$(curl -fsSL https://api.github.com/repos/MikeSchulze/gdUnit4/releases/latest \
