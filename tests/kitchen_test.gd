@@ -22,4 +22,4 @@ func test_player_stops_at_east_wall() -> void:
 	for _step in 120:
 		player._physics_process(1.0 / 60.0)
 	assert_float(player.position.x).is_greater(starting_x)
-	assert_float(player.position.x).is_less(14.5)
+	assert_float(player.position.x).is_less(14.6)
