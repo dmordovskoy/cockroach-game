@@ -1,13 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git push)",
-      "Bash(git push *)",
-      "Bash(git fetch)",
-      "Bash(git fetch *)",
-      "Bash(git pull)",
-      "Bash(git pull *)",
-      "Bash(gh *)"
+      "Bash(git *)",
+      "Bash(gh *)",
+      "Bash(godot *)",
+      "Bash(./tools/*)",
+      "Bash(HOME=*)"
     ]
   },
   "sandbox": {
