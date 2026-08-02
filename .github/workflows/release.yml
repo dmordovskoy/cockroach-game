@@ -1,0 +1,64 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Semver tag, e.g. v0.1.0"
+        required: true
+
+permissions:
+  contents: write
+
+env:
+  GODOT_VERSION: "4.5"
+
+jobs:
+  release:
+    name: Build, smoke, tag, release
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          lfs: true
+
+      - name: Install Godot and export templates
+        run: |
+          curl -fsSL -o godot.zip "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_macos.universal.zip"
+          unzip -q godot.zip
+          echo "GODOT=$PWD/Godot.app/Contents/MacOS/Godot" >> "$GITHUB_ENV"
+          curl -fsSL -o templates.tpz "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_export_templates.tpz"
+          unzip -q templates.tpz
+          DEST="$HOME/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable"
+          mkdir -p "$DEST"
+          mv templates/* "$DEST/"
+
+      - name: Import project
+        run: |
+          "$GODOT" --headless --import
+
+      - name: Export macOS build
+        run: |
+          mkdir -p build
+          "$GODOT" --headless --export-release "macOS" "build/cockroach-game-macos.zip"
+
+      - name: Smoke test the exported build
+        run: |
+          unzip -q build/cockroach-game-macos.zip -d smoke
+          APP=$(find smoke -maxdepth 2 -name "*.app" | head -1)
+          BIN=$(find "$APP/Contents/MacOS" -type f | head -1)
+          chmod +x "$BIN"
+          "$BIN" --headless --quit-after 120
+
+      - name: Tag and create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag "$VERSION"
+          git push origin "$VERSION"
+          gh release create "$VERSION" build/cockroach-game-macos.zip \
+            --title "$VERSION" --generate-notes

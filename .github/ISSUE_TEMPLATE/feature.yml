@@ -1,0 +1,53 @@
+name: Feature
+description: A new piece of the game — spec first, then build
+title: "[feat] "
+labels: [feature]
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What should the game do after this? One or two sentences.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Checklist — when every box ticks, the issue is done.
+      placeholder: |
+        - [ ] The roach can ...
+        - [ ] Playtest verdict: feels ...
+    validations:
+      required: true
+  - type: textarea
+    id: invariants
+    attributes:
+      label: Invariants
+      description: What must NOT break.
+      placeholder: "- Movement still works with WASD and arrows"
+  - type: textarea
+    id: out_of_scope
+    attributes:
+      label: Out of scope
+      description: Explicitly not part of this issue.
+  - type: dropdown
+    id: risk
+    attributes:
+      label: Risk
+      options:
+        - low
+        - medium
+        - high
+      default: 0
+  - type: dropdown
+    id: release
+    attributes:
+      label: Release type
+      description: Does merging this warrant a new release, and of what size?
+      options:
+        - none
+        - patch
+        - minor
+        - major
+      default: 0

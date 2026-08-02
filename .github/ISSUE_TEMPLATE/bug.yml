@@ -1,0 +1,29 @@
+name: Bug
+description: Something in the game is broken
+title: "[bug] "
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should happen
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Start the game
+        2. ...
+  - type: input
+    id: version
+    attributes:
+      label: Version or branch
+      placeholder: v0.1.0 / main / feat/12-jump

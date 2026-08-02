@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install gdtoolkit
+        run: pip install "gdtoolkit==4.*"
+      - name: Format check
+        run: gdformat --check scripts tests
+      - name: Lint
+        run: gdlint scripts tests
+
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - name: Run gdUnit4 tests
+        uses: MikeSchulze/gdUnit4-action@v1
+        with:
+          # Keep in sync with the locally installed editor (tools/setup.sh prints it)
+          godot-version: "4.5"
+          paths: "res://tests"
+          timeout: 10
+          report-name: gdunit4-report.xml
