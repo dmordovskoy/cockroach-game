@@ -4,9 +4,9 @@ Closes #
 
 -
 
-## Playtest (pull + F5)
+## Playtest (pull + ⌘B)
 
-- [ ] Played on the second MacBook (`git fetch && git checkout <branch>`, then F5 in Godot)
+- [ ] Played on the second MacBook (`git fetch && git checkout <branch>`, then ⌘B in Godot)
 - [ ] Kid verdict recorded below
 
 ### Playtest notes
