@@ -1,0 +1,306 @@
+[gd_scene load_steps=22 format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor"]
+albedo_color = Color(0.22, 0.24, 0.26, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_walls"]
+albedo_color = Color(0.48, 0.5, 0.53, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_counters"]
+albedo_color = Color(0.3, 0.33, 0.36, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fridge"]
+albedo_color = Color(0.68, 0.7, 0.72, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_table"]
+albedo_color = Color(0.4, 0.38, 0.36, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_floor"]
+material = SubResource("StandardMaterial3D_floor")
+size = Vector3(30, 0.5, 20)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(30, 0.5, 20)
+
+[sub_resource type="BoxMesh" id="BoxMesh_wall_horizontal"]
+material = SubResource("StandardMaterial3D_walls")
+size = Vector3(30.5, 0.75, 0.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall_horizontal"]
+size = Vector3(30.5, 0.75, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_wall_vertical"]
+material = SubResource("StandardMaterial3D_walls")
+size = Vector3(0.5, 0.75, 20)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall_vertical"]
+size = Vector3(0.5, 0.75, 20)
+
+[sub_resource type="BoxMesh" id="BoxMesh_counter_back"]
+material = SubResource("StandardMaterial3D_counters")
+size = Vector3(15, 8, 3)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_counter_back"]
+size = Vector3(15, 8, 3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_counter_side"]
+material = SubResource("StandardMaterial3D_counters")
+size = Vector3(3, 8, 8.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_counter_side"]
+size = Vector3(3, 8, 8.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_fridge"]
+material = SubResource("StandardMaterial3D_fridge")
+size = Vector3(4.5, 7.4, 3.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_fridge"]
+size = Vector3(4.5, 7.4, 3.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_table_top"]
+material = SubResource("StandardMaterial3D_table")
+size = Vector3(8, 0.5, 5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_table_top"]
+size = Vector3(8, 0.5, 5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_table_leg"]
+material = SubResource("StandardMaterial3D_table")
+size = Vector3(0.8, 3.2, 0.8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_table_leg"]
+size = Vector3(0.8, 3.2, 0.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_chair_leg"]
+material = SubResource("StandardMaterial3D_table")
+size = Vector3(0.55, 2.4, 0.55)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_chair_leg"]
+size = Vector3(0.55, 2.4, 0.55)
+
+[node name="Kitchen" type="Node3D"]
+
+[node name="Floor" type="StaticBody3D" parent="."]
+position = Vector3(0, -0.25, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor"]
+mesh = SubResource("BoxMesh_floor")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+shape = SubResource("BoxShape3D_floor")
+
+[node name="NorthWall" type="StaticBody3D" parent="."]
+position = Vector3(0, 0.375, -10.25)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="NorthWall"]
+mesh = SubResource("BoxMesh_wall_horizontal")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NorthWall"]
+shape = SubResource("BoxShape3D_wall_horizontal")
+
+[node name="SouthWall" type="StaticBody3D" parent="."]
+position = Vector3(0, 0.375, 10.25)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="SouthWall"]
+mesh = SubResource("BoxMesh_wall_horizontal")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SouthWall"]
+shape = SubResource("BoxShape3D_wall_horizontal")
+
+[node name="WestWall" type="StaticBody3D" parent="."]
+position = Vector3(-15.25, 0.375, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="WestWall"]
+mesh = SubResource("BoxMesh_wall_vertical")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WestWall"]
+shape = SubResource("BoxShape3D_wall_vertical")
+
+[node name="EastWall" type="StaticBody3D" parent="."]
+position = Vector3(15.25, 0.375, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="EastWall"]
+mesh = SubResource("BoxMesh_wall_vertical")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="EastWall"]
+shape = SubResource("BoxShape3D_wall_vertical")
+
+[node name="BackCounter" type="StaticBody3D" parent="."]
+position = Vector3(5.5, 4, -8.25)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="BackCounter"]
+mesh = SubResource("BoxMesh_counter_back")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BackCounter"]
+shape = SubResource("BoxShape3D_counter_back")
+
+[node name="SideCounter" type="StaticBody3D" parent="."]
+position = Vector3(12, 4, -3)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="SideCounter"]
+mesh = SubResource("BoxMesh_counter_side")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SideCounter"]
+shape = SubResource("BoxShape3D_counter_side")
+
+[node name="Fridge" type="StaticBody3D" parent="."]
+position = Vector3(-11, 4.3, -8)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Fridge"]
+mesh = SubResource("BoxMesh_fridge")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Fridge"]
+shape = SubResource("BoxShape3D_fridge")
+
+[node name="TableTop" type="StaticBody3D" parent="."]
+position = Vector3(-5, 3.45, 3)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="TableTop"]
+mesh = SubResource("BoxMesh_table_top")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TableTop"]
+shape = SubResource("BoxShape3D_table_top")
+
+[node name="TableLegNorthWest" type="StaticBody3D" parent="."]
+position = Vector3(-8.3, 1.6, 1.2)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="TableLegNorthWest"]
+mesh = SubResource("BoxMesh_table_leg")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TableLegNorthWest"]
+shape = SubResource("BoxShape3D_table_leg")
+
+[node name="TableLegNorthEast" type="StaticBody3D" parent="."]
+position = Vector3(-1.7, 1.6, 1.2)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="TableLegNorthEast"]
+mesh = SubResource("BoxMesh_table_leg")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TableLegNorthEast"]
+shape = SubResource("BoxShape3D_table_leg")
+
+[node name="TableLegSouthWest" type="StaticBody3D" parent="."]
+position = Vector3(-8.3, 1.6, 4.8)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="TableLegSouthWest"]
+mesh = SubResource("BoxMesh_table_leg")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TableLegSouthWest"]
+shape = SubResource("BoxShape3D_table_leg")
+
+[node name="TableLegSouthEast" type="StaticBody3D" parent="."]
+position = Vector3(-1.7, 1.6, 4.8)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="TableLegSouthEast"]
+mesh = SubResource("BoxMesh_table_leg")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TableLegSouthEast"]
+shape = SubResource("BoxShape3D_table_leg")
+
+[node name="ChairWestLegNorthWest" type="StaticBody3D" parent="."]
+position = Vector3(-11.65, 1.2, 2.35)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ChairWestLegNorthWest"]
+mesh = SubResource("BoxMesh_chair_leg")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ChairWestLegNorthWest"]
+shape = SubResource("BoxShape3D_chair_leg")
+
+[node name="ChairWestLegNorthEast" type="StaticBody3D" parent="."]
+position = Vector3(-10.35, 1.2, 2.35)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ChairWestLegNorthEast"]
+mesh = SubResource("BoxMesh_chair_leg")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ChairWestLegNorthEast"]
+shape = SubResource("BoxShape3D_chair_leg")
+
+[node name="ChairWestLegSouthWest" type="StaticBody3D" parent="."]
+position = Vector3(-11.65, 1.2, 3.65)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ChairWestLegSouthWest"]
+mesh = SubResource("BoxMesh_chair_leg")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ChairWestLegSouthWest"]
+shape = SubResource("BoxShape3D_chair_leg")
+
+[node name="ChairWestLegSouthEast" type="StaticBody3D" parent="."]
+position = Vector3(-10.35, 1.2, 3.65)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ChairWestLegSouthEast"]
+mesh = SubResource("BoxMesh_chair_leg")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ChairWestLegSouthEast"]
+shape = SubResource("BoxShape3D_chair_leg")
+
+[node name="ChairEastLegNorthWest" type="StaticBody3D" parent="."]
+position = Vector3(0.35, 1.2, 2.35)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ChairEastLegNorthWest"]
+mesh = SubResource("BoxMesh_chair_leg")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ChairEastLegNorthWest"]
+shape = SubResource("BoxShape3D_chair_leg")
+
+[node name="ChairEastLegNorthEast" type="StaticBody3D" parent="."]
+position = Vector3(1.65, 1.2, 2.35)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ChairEastLegNorthEast"]
+mesh = SubResource("BoxMesh_chair_leg")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ChairEastLegNorthEast"]
+shape = SubResource("BoxShape3D_chair_leg")
+
+[node name="ChairEastLegSouthWest" type="StaticBody3D" parent="."]
+position = Vector3(0.35, 1.2, 3.65)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ChairEastLegSouthWest"]
+mesh = SubResource("BoxMesh_chair_leg")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ChairEastLegSouthWest"]
+shape = SubResource("BoxShape3D_chair_leg")
+
+[node name="ChairEastLegSouthEast" type="StaticBody3D" parent="."]
+position = Vector3(1.65, 1.2, 3.65)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ChairEastLegSouthEast"]
+mesh = SubResource("BoxMesh_chair_leg")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ChairEastLegSouthEast"]
+shape = SubResource("BoxShape3D_chair_leg")
+
+[node name="ChairSouthLegNorthWest" type="StaticBody3D" parent="."]
+position = Vector3(-5.65, 1.2, 6.35)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ChairSouthLegNorthWest"]
+mesh = SubResource("BoxMesh_chair_leg")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ChairSouthLegNorthWest"]
+shape = SubResource("BoxShape3D_chair_leg")
+
+[node name="ChairSouthLegNorthEast" type="StaticBody3D" parent="."]
+position = Vector3(-4.35, 1.2, 6.35)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ChairSouthLegNorthEast"]
+mesh = SubResource("BoxMesh_chair_leg")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ChairSouthLegNorthEast"]
+shape = SubResource("BoxShape3D_chair_leg")
+
+[node name="ChairSouthLegSouthWest" type="StaticBody3D" parent="."]
+position = Vector3(-5.65, 1.2, 7.65)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ChairSouthLegSouthWest"]
+mesh = SubResource("BoxMesh_chair_leg")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ChairSouthLegSouthWest"]
+shape = SubResource("BoxShape3D_chair_leg")
+
+[node name="ChairSouthLegSouthEast" type="StaticBody3D" parent="."]
+position = Vector3(-4.35, 1.2, 7.65)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ChairSouthLegSouthEast"]
+mesh = SubResource("BoxMesh_chair_leg")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ChairSouthLegSouthEast"]
+shape = SubResource("BoxShape3D_chair_leg")
