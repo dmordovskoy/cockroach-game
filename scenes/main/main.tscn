@@ -1,7 +1,7 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene format=3 uid="uid://qwbmdh8pq1yl"]
 
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="1_playerscene"]
-[ext_resource type="Script" path="res://scripts/camera_follow.gd" id="2_camfollow"]
+[ext_resource type="Script" uid="uid://caihi2i8j36f2" path="res://scripts/camera_follow.gd" id="2_camfollow"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 
@@ -22,27 +22,30 @@ size = Vector2(40, 40)
 [sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
 size = Vector3(40, 0.5, 40)
 
-[node name="Main" type="Node3D"]
+[node name="Main" type="Node3D" unique_id=907177258]
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1734744146]
 environment = SubResource("Environment_main")
 
-[node name="Sun" type="DirectionalLight3D" parent="."]
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=261195709]
 transform = Transform3D(1, 0, 0, 0, 0.573576, 0.819152, 0, -0.819152, 0.573576, 0, 12, 0)
 shadow_enabled = true
 
-[node name="Floor" type="StaticBody3D" parent="."]
+[node name="Floor" type="StaticBody3D" parent="." unique_id=2066757332]
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor" unique_id=134109880]
 mesh = SubResource("PlaneMesh_floor")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor" unique_id=1351233993]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, 0)
 shape = SubResource("BoxShape3D_floor")
 
-[node name="Player" parent="." instance=ExtResource("1_playerscene")]
+[node name="Player" parent="." unique_id=636934858 instance=ExtResource("1_playerscene")]
 
-[node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.642788, 0.766044, 0, -0.766044, 0.642788, 0, 10, 8)
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1792301300 node_paths=PackedStringArray("target")]
+transform = Transform3D(0.707107, -0.353553, 0.612372, 0, 0.866025, 0.5, -0.707107, -0.353553, 0.612372, 12, 10, 12)
+projection = 1
+size = 12.0
+far = 100.0
 script = ExtResource("2_camfollow")
 target = NodePath("../Player")

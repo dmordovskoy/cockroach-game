@@ -12,6 +12,10 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	step(delta)
+
+
+func step(delta: float) -> void:
 	if target:
 		var goal := target.global_position + _offset
 		global_position = global_position.lerp(goal, minf(follow_speed * delta, 1.0))

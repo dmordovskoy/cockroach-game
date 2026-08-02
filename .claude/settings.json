@@ -1,13 +1,32 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git push)",
-      "Bash(git push *)",
-      "Bash(git fetch)",
-      "Bash(git fetch *)",
-      "Bash(git pull)",
-      "Bash(git pull *)",
-      "Bash(gh *)"
+      "Bash(git *)",
+      "Bash(gh *)",
+      "Bash(godot *)",
+      "Bash(./tools/*)",
+      "Bash(HOME=\"$TMPDIR/gdhome\" godot *)",
+      "Bash(HOME=\"$TMPDIR/gdhome\" ./tools/test.sh*)",
+      "Bash(tail *)",
+      "Bash(head *)",
+      "Bash(grep *)",
+      "Bash(sed *)",
+      "Bash(awk *)",
+      "Bash(jq *)",
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Bash(echo *)",
+      "Bash(printf *)",
+      "Bash(wc *)",
+      "Bash(sort *)",
+      "Bash(find *)",
+      "Bash(diff *)",
+      "Bash(mkdir *)",
+      "Bash(touch *)",
+      "Bash(chmod *)",
+      "Bash(sleep *)",
+      "Bash(command *)",
+      "Bash(which *)"
     ]
   },
   "sandbox": {

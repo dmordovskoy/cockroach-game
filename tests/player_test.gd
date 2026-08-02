@@ -26,7 +26,7 @@ func test_moves_left_on_input() -> void:
 
 func test_turns_toward_movement_direction() -> void:
 	var runner := scene_runner("res://scenes/player/player.tscn")
-	Input.action_press("move_down")
-	await runner.simulate_frames(60)
+	Input.action_press("move_left")
+	await runner.simulate_frames(90)
 	var player: Player = runner.scene()
-	assert_float(absf(angle_difference(player.rotation.y, PI))).is_less(0.2)
+	assert_float(absf(angle_difference(player.rotation.y, PI / 2))).is_less(0.2)
