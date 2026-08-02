@@ -40,10 +40,13 @@ func test_scene_scuttles_while_moving_then_returns_to_idle() -> void:
 	var runner := scene_runner("res://scenes/player/player.tscn")
 	Input.action_press("move_right")
 	await runner.simulate_frames(2, 16)
-	var animator := runner.scene().get_node("Cockroach") as RoachAnimator
+	var player := runner.scene() as Player
+	var animator := player.get_node("Cockroach") as RoachAnimator
 
 	assert_str(animator.animation_player.current_animation).is_equal("scuttle")
 
 	Input.action_release("move_right")
-	await runner.simulate_frames(12, 16)
+	for _step_index in range(10):
+		player._physics_process(0.016)
+		animator.step(0.016)
 	assert_str(animator.animation_player.current_animation).is_equal("idle")
