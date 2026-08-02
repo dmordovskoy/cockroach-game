@@ -8,6 +8,11 @@ build/
 # gdUnit4 reports
 reports/
 
+# Claude Code local config — holds the GitHub PAT, never commit
+.claude/settings.local.json
+.claude/gh/
+.claude/.cc-writes/
+
 # Blender backups
 *.blend1
 *.blend2
