@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build, validate, export, and render the static cockroach model."""
+"""Build, rig, animate, validate, export, and render the cockroach model."""
 
 from __future__ import annotations
 
@@ -15,13 +15,22 @@ BLEND_PATH = REPO_ROOT / "blender" / "cockroach.blend"
 GLB_PATH = REPO_ROOT / "assets" / "models" / "cockroach.glb"
 RENDER_DIR = REPO_ROOT / "blender" / "renders"
 TRIANGLE_LIMIT = 2_000
+FRAME_RATE = 30
+SCUTTLE_END_FRAME = 13
+IDLE_END_FRAME = 16
 
 MODEL_OBJECTS: list[bpy.types.Object] = []
 BODY_OBJECTS: list[bpy.types.Object] = []
+LEG_CHAINS: dict[str, tuple[list[Vector], list[bpy.types.Object]]] = {}
+ANTENNA_CHAINS: dict[str, tuple[list[Vector], list[bpy.types.Object]]] = {}
 
 
 def clear_scene() -> None:
 	"""Start from an empty file so repeated runs produce the same scene."""
+	MODEL_OBJECTS.clear()
+	BODY_OBJECTS.clear()
+	LEG_CHAINS.clear()
+	ANTENNA_CHAINS.clear()
 	bpy.ops.object.select_all(action="SELECT")
 	bpy.ops.object.delete(use_global=False)
 
@@ -35,6 +44,10 @@ def clear_scene() -> None:
 		bpy.data.cameras.remove(camera)
 	for light in list(bpy.data.lights):
 		bpy.data.lights.remove(light)
+	for armature in list(bpy.data.armatures):
+		bpy.data.armatures.remove(armature)
+	for action in list(bpy.data.actions):
+		bpy.data.actions.remove(action)
 
 
 def make_material(name: str, color: tuple[float, float, float, float]) -> bpy.types.Material:
@@ -94,6 +107,33 @@ def add_ellipsoid(
 	return register_mesh(obj, material, collection, body_part=body_part)
 
 
+def add_banded_ellipsoid(
+	name: str,
+	location: tuple[float, float, float],
+	scale: tuple[float, float, float],
+	materials: tuple[bpy.types.Material, bpy.types.Material],
+	collection: bpy.types.Collection,
+	*,
+	band_count: int = 7,
+) -> bpy.types.Object:
+	"""Create one continuous underbelly mesh with alternating material bands."""
+	bpy.ops.mesh.primitive_uv_sphere_add(
+		segments=12,
+		ring_count=8,
+		calc_uvs=False,
+		location=location,
+	)
+	obj = bpy.context.object
+	obj.name = name
+	obj.scale = scale
+	register_mesh(obj, materials[0], collection, body_part=True)
+	obj.data.materials.append(materials[1])
+	for polygon in obj.data.polygons:
+		normalized_y = min(max((polygon.center.y + 1.0) * 0.5, 0.0), 0.9999)
+		polygon.material_index = int(normalized_y * band_count) % len(materials)
+	return obj
+
+
 def add_ico_sphere(
 	name: str,
 	location: tuple[float, float, float],
@@ -148,17 +188,21 @@ def add_chain(
 	radii: list[float],
 	materials: tuple[bpy.types.Material, ...],
 	collection: bpy.types.Collection,
-) -> None:
+) -> list[bpy.types.Object]:
+	segments: list[bpy.types.Object] = []
 	for index, (start, end) in enumerate(zip(points, points[1:])):
-		add_tapered_segment(
-			f"{name}_{index + 1:02d}",
-			start,
-			end,
-			radii[index],
-			radii[index + 1],
-			materials[index % len(materials)],
-			collection,
+		segments.append(
+			add_tapered_segment(
+				f"{name}_{index + 1:02d}",
+				start,
+				end,
+				radii[index],
+				radii[index + 1],
+				materials[index % len(materials)],
+				collection,
+			)
 		)
+	return segments
 
 
 def create_model(collection: bpy.types.Collection) -> None:
@@ -172,7 +216,7 @@ def create_model(collection: bpy.types.Collection) -> None:
 	pupil = make_material("Pupil", (0.018, 0.010, 0.007, 1.0))
 	highlight = make_material("EyeHighlight", (1.0, 0.97, 0.88, 1.0))
 
-	# A warm, segmented underside remains visible below the split wing cases.
+	# A single continuous underside carries material bands without overlapping nuggets.
 	add_ellipsoid(
 		"AbdomenCore",
 		(0.0, -0.10, 0.145),
@@ -181,15 +225,13 @@ def create_model(collection: bpy.types.Collection) -> None:
 		collection,
 		body_part=True,
 	)
-	for index, y_position in enumerate((-0.34, -0.17, 0.0, 0.16)):
-		add_ellipsoid(
-			f"BellyBand_{index + 1:02d}",
-			(0.0, y_position, 0.095 + index * 0.006),
-			(0.290 - index * 0.006, 0.086, 0.062),
-			belly if index % 2 == 0 else belly_light,
-			collection,
-			body_part=True,
-		)
+	add_banded_ellipsoid(
+		"Underbelly",
+		(0.0, -0.09, 0.105),
+		(0.285, 0.405, 0.085),
+		(belly, belly_light),
+		collection,
+	)
 
 	# Two overlapping low-poly ellipsoids create the broad shell and central seam.
 	add_ellipsoid(
@@ -226,8 +268,8 @@ def create_model(collection: bpy.types.Collection) -> None:
 	)
 	add_ellipsoid(
 		"Head",
-		(0.0, 0.405, 0.205),
-		(0.225, 0.18, 0.14),
+		(0.0, 0.425, 0.215),
+		(0.235, 0.205, 0.155),
 		shell_light,
 		collection,
 		body_part=True,
@@ -236,24 +278,24 @@ def create_model(collection: bpy.types.Collection) -> None:
 	for side, label in ((-1.0, "Left"), (1.0, "Right")):
 		add_ellipsoid(
 			f"Eye{label}",
-			(side * 0.092, 0.548, 0.253),
-			(0.083, 0.027, 0.082),
+			(side * 0.175, 0.575, 0.275),
+			(0.082, 0.050, 0.092),
 			eye,
 			collection,
 			body_part=True,
 		)
-		pupil_x = side * 0.068
+		pupil_x = side * 0.218
 		add_ellipsoid(
 			f"Pupil{label}",
-			(pupil_x, 0.574, 0.252),
-			(0.033, 0.014, 0.046),
+			(pupil_x, 0.611, 0.273),
+			(0.031, 0.022, 0.049),
 			pupil,
 			collection,
 			body_part=True,
 		)
 		add_ico_sphere(
 			f"EyeHighlight{label}",
-			(pupil_x - side * 0.008, 0.588, 0.273),
+			(pupil_x + side * 0.006, 0.628, 0.298),
 			0.012,
 			highlight,
 			collection,
@@ -293,12 +335,16 @@ def create_model(collection: bpy.types.Collection) -> None:
 				collection,
 				scale=(1.0, 0.82, 0.82),
 			)
-			add_chain(
+			segments = add_chain(
 				f"Leg{side_name}_{leg_index + 1:02d}",
 				points,
 				leg_radii,
 				leg_materials,
 				collection,
+			)
+			LEG_CHAINS[f"{side_name}_{leg_index + 1:02d}"] = (
+				[Vector(point) for point in points],
+				segments,
 			)
 
 	antenna_radii = [0.018, 0.017, 0.015, 0.013, 0.011, 0.009, 0.005]
@@ -312,12 +358,16 @@ def create_model(collection: bpy.types.Collection) -> None:
 			(side * 0.30, 1.13, 0.455),
 			(side * 0.39, 1.22, 0.375),
 		]
-		add_chain(
+		segments = add_chain(
 			f"Antenna{side_name}",
 			antenna_points,
 			antenna_radii,
 			(shell, shell_light),
 			collection,
+		)
+		ANTENNA_CHAINS[side_name] = (
+			[Vector(point) for point in antenna_points],
+			segments,
 		)
 
 
@@ -337,7 +387,7 @@ def object_bounds(objects: list[bpy.types.Object]) -> tuple[Vector, Vector]:
 	return minimum, maximum
 
 
-def center_and_ground_model() -> None:
+def center_and_ground_model() -> Vector:
 	body_minimum, body_maximum = object_bounds(BODY_OBJECTS)
 	body_center = (body_minimum + body_maximum) * 0.5
 	for obj in MODEL_OBJECTS:
@@ -354,6 +404,179 @@ def center_and_ground_model() -> None:
 		obj.select_set(True)
 		bpy.context.view_layer.objects.active = obj
 		bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+
+	return Vector((-body_center.x, -body_center.y, -model_minimum.z))
+
+
+def bind_rigid_meshes_to_bone(
+	objects: list[bpy.types.Object],
+	armature: bpy.types.Object,
+	bone_name: str,
+) -> None:
+	"""Weight each low-poly segment fully to one bone for crisp articulation."""
+	for obj in objects:
+		obj.parent = armature
+		obj.matrix_parent_inverse = armature.matrix_world.inverted()
+		vertex_group = obj.vertex_groups.new(name=bone_name)
+		vertex_group.add(range(len(obj.data.vertices)), 1.0, "REPLACE")
+		modifier = obj.modifiers.new(name="CockroachRig", type="ARMATURE")
+		modifier.object = armature
+
+
+def add_edit_bone(
+	armature: bpy.types.Object,
+	name: str,
+	head: Vector,
+	tail: Vector,
+	parent: bpy.types.EditBone,
+	*,
+	connected: bool = False,
+) -> bpy.types.EditBone:
+	bone = armature.data.edit_bones.new(name)
+	bone.head = head
+	bone.tail = tail
+	bone.parent = parent
+	bone.use_connect = connected
+	bone.align_roll(Vector((0.0, 0.0, 1.0)))
+	return bone
+
+
+def create_rig(collection: bpy.types.Collection, model_offset: Vector) -> bpy.types.Object:
+	armature_data = bpy.data.armatures.new("CockroachRig")
+	armature = bpy.data.objects.new("CockroachRig", armature_data)
+	collection.objects.link(armature)
+	armature.show_in_front = True
+
+	bpy.ops.object.select_all(action="DESELECT")
+	armature.select_set(True)
+	bpy.context.view_layer.objects.active = armature
+	bpy.ops.object.mode_set(mode="EDIT")
+
+	root = armature.data.edit_bones.new("Root")
+	root.head = Vector((0.0, 0.0, 0.0))
+	root.tail = Vector((0.0, 0.0, 0.25))
+
+	for chain_name, (points, _objects) in LEG_CHAINS.items():
+		adjusted_points = [point + model_offset for point in points]
+		upper = add_edit_bone(
+			armature,
+			f"Leg{chain_name}_Upper",
+			adjusted_points[0],
+			adjusted_points[1],
+			root,
+		)
+		add_edit_bone(
+			armature,
+			f"Leg{chain_name}_Lower",
+			adjusted_points[1],
+			adjusted_points[-1],
+			upper,
+			connected=True,
+		)
+
+	for side_name, (points, _objects) in ANTENNA_CHAINS.items():
+		adjusted_points = [point + model_offset for point in points]
+		upper = add_edit_bone(
+			armature,
+			f"Antenna{side_name}_Upper",
+			adjusted_points[0],
+			adjusted_points[3],
+			root,
+		)
+		add_edit_bone(
+			armature,
+			f"Antenna{side_name}_Lower",
+			adjusted_points[3],
+			adjusted_points[-1],
+			upper,
+			connected=True,
+		)
+
+	bpy.ops.object.mode_set(mode="OBJECT")
+
+	for chain_name, (_points, objects) in LEG_CHAINS.items():
+		bind_rigid_meshes_to_bone(objects[:1], armature, f"Leg{chain_name}_Upper")
+		bind_rigid_meshes_to_bone(objects[1:], armature, f"Leg{chain_name}_Lower")
+	for side_name, (_points, objects) in ANTENNA_CHAINS.items():
+		bind_rigid_meshes_to_bone(objects[:3], armature, f"Antenna{side_name}_Upper")
+		bind_rigid_meshes_to_bone(objects[3:], armature, f"Antenna{side_name}_Lower")
+
+	return armature
+
+
+def keyframe_rotation(
+	pose_bone: bpy.types.PoseBone,
+	frame: int,
+	rotation: tuple[float, float, float],
+) -> None:
+	pose_bone.rotation_mode = "XYZ"
+	pose_bone.rotation_euler = rotation
+	pose_bone.keyframe_insert(data_path="rotation_euler", frame=frame, group=pose_bone.name)
+
+
+def create_scuttle_action(armature: bpy.types.Object) -> bpy.types.Action:
+	action = bpy.data.actions.new("scuttle")
+	action.use_fake_user = True
+	armature.animation_data.action = action
+	tripod_a = {"Left_01", "Right_02", "Left_03"}
+
+	for frame in (1, 4, 7, 10, SCUTTLE_END_FRAME):
+		phase = math.tau * (frame - 1) / (SCUTTLE_END_FRAME - 1)
+		keyframe_rotation(armature.pose.bones["Root"], frame, (0.0, 0.0, 0.0))
+		for chain_name in LEG_CHAINS:
+			tripod_sign = 1.0 if chain_name in tripod_a else -1.0
+			wave = math.sin(phase) * tripod_sign
+			lift = max(wave, 0.0)
+			side_sign = -1.0 if chain_name.startswith("Left") else 1.0
+			upper_rotation = (
+				math.radians(14.0 * lift),
+				0.0,
+				math.radians(22.0 * wave * side_sign),
+			)
+			lower_rotation = (math.radians(-30.0 * lift), 0.0, 0.0)
+			keyframe_rotation(armature.pose.bones[f"Leg{chain_name}_Upper"], frame, upper_rotation)
+			keyframe_rotation(armature.pose.bones[f"Leg{chain_name}_Lower"], frame, lower_rotation)
+
+		for side_name in ANTENNA_CHAINS:
+			side_sign = -1.0 if side_name == "Left" else 1.0
+			sway = math.radians(4.0 * math.sin(phase) * side_sign)
+			keyframe_rotation(
+				armature.pose.bones[f"Antenna{side_name}_Upper"], frame, (0.0, 0.0, sway)
+			)
+			keyframe_rotation(
+				armature.pose.bones[f"Antenna{side_name}_Lower"], frame, (0.0, 0.0, -sway * 0.7)
+			)
+
+	return action
+
+
+def create_idle_action(armature: bpy.types.Object) -> bpy.types.Action:
+	action = bpy.data.actions.new("idle")
+	action.use_fake_user = True
+	armature.animation_data.action = action
+
+	for frame, sway_direction in ((1, -1.0), (8, 1.0), (IDLE_END_FRAME, -1.0)):
+		for pose_bone in armature.pose.bones:
+			keyframe_rotation(pose_bone, frame, (0.0, 0.0, 0.0))
+		for side_name in ANTENNA_CHAINS:
+			side_sign = -1.0 if side_name == "Left" else 1.0
+			sway = math.radians(7.0 * sway_direction * side_sign)
+			keyframe_rotation(
+				armature.pose.bones[f"Antenna{side_name}_Upper"], frame, (0.0, 0.0, sway)
+			)
+			keyframe_rotation(
+				armature.pose.bones[f"Antenna{side_name}_Lower"], frame, (0.0, 0.0, -sway * 0.65)
+			)
+
+	return action
+
+
+def create_animations(armature: bpy.types.Object) -> tuple[bpy.types.Action, bpy.types.Action]:
+	armature.animation_data_create()
+	scuttle = create_scuttle_action(armature)
+	idle = create_idle_action(armature)
+	armature.animation_data.action = scuttle
+	return scuttle, idle
 
 
 def triangle_count() -> int:
@@ -396,12 +619,40 @@ def validate_model() -> None:
 	)
 
 
-def export_glb() -> None:
+def validate_rig(
+	armature: bpy.types.Object,
+	scuttle: bpy.types.Action,
+	idle: bpy.types.Action,
+) -> None:
+	expected_bone_count = 1 + len(LEG_CHAINS) * 2 + len(ANTENNA_CHAINS) * 2
+	assert len(armature.data.bones) == expected_bone_count, (
+		f"Rig bone count mismatch: {len(armature.data.bones)} != {expected_bone_count}"
+	)
+	assert scuttle.name == "scuttle" and idle.name == "idle", "Animation names must survive export exactly"
+	scuttle_duration = (scuttle.frame_range[1] - scuttle.frame_range[0]) / FRAME_RATE
+	assert abs(scuttle_duration - 0.4) < 0.001, f"Scuttle cycle must be 0.4s, got {scuttle_duration:.3f}s"
+
+	for chain_name, (_points, objects) in LEG_CHAINS.items():
+		for index, obj in enumerate(objects):
+			expected_bone = f"Leg{chain_name}_{'Upper' if index == 0 else 'Lower'}"
+			assert obj.vertex_groups.get(expected_bone) is not None, f"{obj.name} is not weighted to {expected_bone}"
+			assert any(modifier.type == "ARMATURE" for modifier in obj.modifiers), (
+				f"{obj.name} lacks an armature modifier"
+			)
+
+	print(
+		f"Rig contract: bones={len(armature.data.bones)}, "
+		f"animations={scuttle.name}({scuttle_duration:.1f}s),{idle.name}"
+	)
+
+
+def export_glb(armature: bpy.types.Object) -> None:
 	GLB_PATH.parent.mkdir(parents=True, exist_ok=True)
 	bpy.ops.object.select_all(action="DESELECT")
 	for obj in MODEL_OBJECTS:
 		obj.select_set(True)
-	bpy.context.view_layer.objects.active = MODEL_OBJECTS[0]
+	armature.select_set(True)
+	bpy.context.view_layer.objects.active = armature
 	bpy.ops.export_scene.gltf(
 		filepath=str(GLB_PATH),
 		export_format="GLB",
@@ -412,7 +663,10 @@ def export_glb() -> None:
 		export_normals=True,
 		export_cameras=False,
 		export_lights=False,
-		export_animations=False,
+		export_animations=True,
+		export_animation_mode="ACTIONS",
+		export_frame_range=True,
+		export_optimize_animation_size=False,
 	)
 
 
@@ -475,8 +729,14 @@ def create_render_setup(collection: bpy.types.Collection) -> bpy.types.Object:
 	return camera
 
 
-def render_views(camera: bpy.types.Object) -> None:
+def render_views(
+	camera: bpy.types.Object,
+	armature: bpy.types.Object,
+	scuttle: bpy.types.Action,
+) -> None:
 	RENDER_DIR.mkdir(parents=True, exist_ok=True)
+	armature.animation_data.action = scuttle
+	bpy.context.scene.frame_set(1)
 	views = (
 		("front", (0.0, 2.8, 0.25), (0.0, 0.05, 0.24), 1.10),
 		("side", (2.8, 0.32, 0.32), (0.0, 0.32, 0.25), 1.90),
@@ -490,6 +750,16 @@ def render_views(camera: bpy.types.Object) -> None:
 		bpy.context.scene.render.filepath = str(RENDER_DIR / f"{name}.png")
 		bpy.ops.render.render(write_still=True)
 
+	for name, frame in (("side_step_a", 4), ("side_step_b", 10)):
+		bpy.context.scene.frame_set(frame)
+		camera.location = (2.8, 0.32, 0.32)
+		camera.data.ortho_scale = 1.90
+		aim_camera(camera, (0.0, 0.32, 0.25))
+		bpy.context.scene.render.filepath = str(RENDER_DIR / f"{name}.png")
+		bpy.ops.render.render(write_still=True)
+
+	bpy.context.scene.frame_set(1)
+
 
 def main() -> None:
 	BLEND_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -499,6 +769,7 @@ def main() -> None:
 	scene.name = "CockroachReview"
 	scene.unit_settings.system = "METRIC"
 	scene.unit_settings.scale_length = 1.0
+	scene.render.fps = FRAME_RATE
 
 	model_collection = bpy.data.collections.new("CockroachModel")
 	render_collection = bpy.data.collections.new("RenderSetup")
@@ -506,16 +777,19 @@ def main() -> None:
 	scene.collection.children.link(render_collection)
 
 	create_model(model_collection)
-	center_and_ground_model()
+	model_offset = center_and_ground_model()
+	armature = create_rig(model_collection, model_offset)
+	scuttle, idle = create_animations(armature)
 	validate_model()
-	export_glb()
+	validate_rig(armature, scuttle, idle)
+	export_glb(armature)
 	camera = create_render_setup(render_collection)
-	render_views(camera)
+	render_views(camera, armature, scuttle)
 	scene.render.filepath = "//renders/"
 	bpy.ops.wm.save_as_mainfile(filepath=str(BLEND_PATH), compress=True, relative_remap=True)
 	print(f"Saved {BLEND_PATH.relative_to(REPO_ROOT)}")
 	print(f"Exported {GLB_PATH.relative_to(REPO_ROOT)}")
-	print(f"Rendered four review views to {RENDER_DIR.relative_to(REPO_ROOT)}")
+	print(f"Rendered six review views to {RENDER_DIR.relative_to(REPO_ROOT)}")
 
 
 if __name__ == "__main__":
