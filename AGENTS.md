@@ -25,6 +25,8 @@ and CI gate every merge. Humans playtest and merge.
    - `gdformat --check scripts tests` and `gdlint scripts tests` (if installed locally)
 6. Commit with conventional messages (`feat:` `fix:` `chore:` `docs:` `test:`).
    Push the branch, open **one PR** with `Closes #<issue#>`, fill the PR template.
+   Open it **ready for review, never as a draft** — the review bot ignores drafts.
+   After pushing, check the working tree back out to `main` (the checkout is shared).
 7. **Never push to `main`. Never merge.** Merging happens after CI, both reviews,
    and the human playtest checklist.
 8. Review feedback arrives as PR comments — fix on the same branch and push;
@@ -56,6 +58,12 @@ and CI gate every merge. Humans playtest and merge.
   pacing differs wildly from local. Call the logic directly with a fixed delta instead
   (see `test_camera_follow_converges_on_target` in `tests/camera_test.gd`)
 - Headless run crashes writing `user://`? Prefix: `HOME="$TMPDIR/gdhome" ./tools/test.sh`
+
+## Your local config
+
+Your workspace config lives in `.codex/` — it is machine-local and gitignored.
+Permission or approval settings are **never repo work**: no branches, no commits,
+no PRs for them, and never bundle project-file edits with config changes.
 
 ## Environment
 

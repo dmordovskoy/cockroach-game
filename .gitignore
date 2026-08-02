@@ -13,6 +13,9 @@ reports/
 .claude/gh/
 .claude/.cc-writes/
 
+# Codex CLI local workspace config
+.codex/
+
 # Blender backups
 *.blend1
 *.blend2
