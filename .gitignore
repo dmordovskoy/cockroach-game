@@ -1,0 +1,13 @@
+# Godot
+.godot/
+*.translation
+
+# Build output
+build/
+
+# Blender backups
+*.blend1
+*.blend2
+
+# macOS
+.DS_Store
