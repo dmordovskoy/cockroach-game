@@ -1,4 +1,6 @@
-[gd_scene load_steps=22 format=3]
+[gd_scene load_steps=30 format=3]
+
+[ext_resource type="Script" path="res://scripts/light_zone.gd" id="1_light_zone"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor"]
 albedo_color = Color(0.22, 0.24, 0.26, 1)
@@ -78,7 +80,67 @@ size = Vector3(0.55, 2.4, 0.55)
 [sub_resource type="BoxShape3D" id="BoxShape3D_chair_leg"]
 size = Vector3(0.55, 2.4, 0.55)
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_light_pool"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(1, 0.82, 0.18, 0.32)
+emission_enabled = true
+emission = Color(1, 0.64, 0.08, 1)
+emission_energy_multiplier = 2.5
+
+[sub_resource type="BoxMesh" id="BoxMesh_window_light"]
+material = SubResource("StandardMaterial3D_light_pool")
+size = Vector3(5, 0.02, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_window_light"]
+size = Vector3(5, 1.5, 4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_cabinet_light"]
+material = SubResource("StandardMaterial3D_light_pool")
+size = Vector3(12, 0.02, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_cabinet_light"]
+size = Vector3(12, 1.5, 2)
+
 [node name="Kitchen" type="Node3D"]
+
+[node name="WindowLightZone" type="Area3D" parent="."]
+position = Vector3(5, 0.75, 2.5)
+script = ExtResource("1_light_zone")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WindowLightZone"]
+shape = SubResource("BoxShape3D_window_light")
+
+[node name="LightPool" type="MeshInstance3D" parent="WindowLightZone"]
+position = Vector3(0, -0.73, 0)
+mesh = SubResource("BoxMesh_window_light")
+
+[node name="SpotLight3D" type="SpotLight3D" parent="WindowLightZone"]
+rotation_degrees = Vector3(-90, 0, 0)
+position = Vector3(0, 5, 0)
+light_color = Color(1, 0.78, 0.38, 1)
+light_energy = 4.0
+shadow_enabled = true
+spot_range = 9.0
+spot_angle = 38.0
+
+[node name="UnderCabinetLightZone" type="Area3D" parent="."]
+position = Vector3(5, 0.75, -5.5)
+script = ExtResource("1_light_zone")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="UnderCabinetLightZone"]
+shape = SubResource("BoxShape3D_cabinet_light")
+
+[node name="LightPool" type="MeshInstance3D" parent="UnderCabinetLightZone"]
+position = Vector3(0, -0.73, 0)
+mesh = SubResource("BoxMesh_cabinet_light")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="UnderCabinetLightZone"]
+position = Vector3(0, 2.5, 0)
+light_color = Color(1, 0.68, 0.24, 1)
+light_energy = 3.0
+shadow_enabled = true
+omni_range = 7.5
 
 [node name="Floor" type="StaticBody3D" parent="."]
 position = Vector3(0, -0.25, 0)
