@@ -34,7 +34,6 @@ shadow_enabled = true
 [node name="Floor" type="StaticBody3D" parent="." unique_id=2066757332]
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Floor" unique_id=134109880]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0219086, 0.24483371, 1.5947644)
 mesh = SubResource("PlaneMesh_floor")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Floor" unique_id=1351233993]
