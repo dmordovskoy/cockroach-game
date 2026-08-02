@@ -1,6 +1,7 @@
 # Cockroach Game
 
 Godot 4.4+, GDScript only (no C#). 3D rendering, gameplay locked to the XZ plane.
+Game concept and mechanics roadmap: `docs/design.md`.
 
 ## Layout
 
