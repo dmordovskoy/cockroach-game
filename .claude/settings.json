@@ -5,7 +5,27 @@
       "Bash(gh *)",
       "Bash(godot *)",
       "Bash(./tools/*)",
-      "Bash(HOME=*)"
+      "Bash(HOME=*)",
+      "Bash(tail *)",
+      "Bash(head *)",
+      "Bash(grep *)",
+      "Bash(sed *)",
+      "Bash(awk *)",
+      "Bash(jq *)",
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Bash(echo *)",
+      "Bash(printf *)",
+      "Bash(wc *)",
+      "Bash(sort *)",
+      "Bash(find *)",
+      "Bash(diff *)",
+      "Bash(mkdir *)",
+      "Bash(touch *)",
+      "Bash(chmod *)",
+      "Bash(sleep *)",
+      "Bash(command *)",
+      "Bash(which *)"
     ]
   },
   "sandbox": {

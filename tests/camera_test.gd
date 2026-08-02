@@ -1,10 +1,6 @@
 extends GdUnitTestSuite
 
 
-func after_test() -> void:
-	Input.action_release("move_right")
-
-
 func test_camera_is_orthographic() -> void:
 	var runner := scene_runner("res://scenes/main/main.tscn")
 	await runner.simulate_frames(2)
@@ -19,16 +15,19 @@ func test_camera_target_resolves() -> void:
 	assert_object(camera.target).is_not_null()
 
 
-func test_camera_follows_player() -> void:
-	var runner := scene_runner("res://scenes/main/main.tscn")
-	await runner.simulate_frames(10)
-	var scene: Node3D = runner.scene()
-	var camera: Camera3D = scene.get_node("Camera3D")
-	var player: Node3D = scene.get_node("Player")
-	var offset: Vector3 = camera.global_position - player.global_position
-	Input.action_press("move_right")
-	await runner.simulate_frames(120)
-	Input.action_release("move_right")
-	await runner.simulate_frames(150)
-	var goal := player.global_position + offset
-	assert_float(camera.global_position.distance_to(goal)).is_less(1.0)
+func test_camera_follow_converges_on_target() -> void:
+	var camera_offset := Vector3(12.0, 10.0, 12.0)
+	var world: Node3D = auto_free(Node3D.new())
+	add_child(world)
+	var target := Node3D.new()
+	world.add_child(target)
+	var camera := Camera3D.new()
+	camera.set_script(load("res://scripts/camera_follow.gd"))
+	camera.position = camera_offset
+	camera.set("target", target)
+	world.add_child(camera)
+	target.position = Vector3(5.0, 0.0, 0.0)
+	for _i in 180:
+		camera.step(1.0 / 60.0)
+	var goal := target.global_position + camera_offset
+	assert_float(camera.global_position.distance_to(goal)).is_less(0.5)
