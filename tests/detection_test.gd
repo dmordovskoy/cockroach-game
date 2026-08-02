@@ -56,6 +56,7 @@ func test_main_scene_fills_in_light_and_drains_in_shadow() -> void:
 	var player: Player = main.get_node("Player")
 	var detection := player.get_node("Detection") as DetectionScript
 	var light_zone := main.get_node("Kitchen/WindowLightZone") as Area3D
+	detection.set_physics_process(false)
 
 	player.global_position = Vector3(
 		light_zone.global_position.x, 0.0, light_zone.global_position.z
@@ -64,7 +65,7 @@ func test_main_scene_fills_in_light_and_drains_in_shadow() -> void:
 	player.velocity = Vector3.ZERO
 	await runner.await_signal_on(light_zone, "body_entered", [player])
 	var shadow_level := detection.level
-	await runner.simulate_frames(12)
+	detection.step(0.5)
 	assert_float(detection.level).is_greater(shadow_level)
 
 	player.global_position = Vector3(-13.5, 0.0, 8.0)
@@ -73,5 +74,5 @@ func test_main_scene_fills_in_light_and_drains_in_shadow() -> void:
 	await runner.await_signal_on(light_zone, "body_exited", [player])
 	assert_bool(detection.is_lit()).is_false()
 	var light_level := detection.level
-	await runner.simulate_frames(12)
+	detection.step(0.5)
 	assert_float(detection.level).is_less(light_level)
