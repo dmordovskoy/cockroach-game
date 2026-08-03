@@ -5,6 +5,8 @@ const CAMERA_PATH := "CameraRig/SpringArm3D/Camera3D"
 
 func after_test() -> void:
 	Input.action_release("camera_toggle")
+	Input.action_release("camera_zoom_in")
+	Input.action_release("camera_zoom_out")
 
 
 func test_camera_toggle_action_uses_physical_c() -> void:
@@ -22,17 +24,16 @@ func test_camera_zoom_actions_use_mouse_wheel() -> void:
 	assert_bool(_action_uses_mouse_button("camera_zoom_out", MOUSE_BUTTON_WHEEL_DOWN)).is_true()
 
 
-func test_mouse_wheel_actions_adjust_pov_zoom() -> void:
+func test_zoom_actions_adjust_pov_zoom_via_input_singleton() -> void:
 	var runner := scene_runner("res://scenes/main/main.tscn")
 	await runner.simulate_frames(2)
 	var rig: CameraRig = runner.scene().get_node("CameraRig")
 	rig.set_mode(CameraRig.CameraMode.POV)
 	var initial_distance := rig.get_pov_distance()
-	var zoom_out := InputEventMouseButton.new()
-	zoom_out.button_index = MOUSE_BUTTON_WHEEL_DOWN
-	zoom_out.pressed = true
 
-	rig._unhandled_input(zoom_out)
+	Input.action_press("camera_zoom_out")
+	rig.step(0.0)
+	Input.action_release("camera_zoom_out")
 
 	assert_float(rig.get_pov_distance()).is_equal_approx(
 		initial_distance + rig.mouse_wheel_zoom_step, 0.001

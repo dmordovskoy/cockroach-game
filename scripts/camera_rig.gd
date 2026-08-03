@@ -54,17 +54,16 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event is InputEventMagnifyGesture:
 		apply_zoom_delta((1.0 - event.factor) * magnify_zoom_scale)
 		get_viewport().set_input_as_handled()
-	elif event.is_action_pressed("camera_zoom_in"):
-		apply_zoom_delta(-mouse_wheel_zoom_step)
-		get_viewport().set_input_as_handled()
-	elif event.is_action_pressed("camera_zoom_out"):
-		apply_zoom_delta(mouse_wheel_zoom_step)
-		get_viewport().set_input_as_handled()
 
 
 func step(delta: float) -> void:
 	if Input.is_action_just_pressed("camera_toggle"):
 		toggle_mode()
+	if current_mode == CameraMode.POV:
+		if Input.is_action_just_pressed("camera_zoom_in"):
+			apply_zoom_delta(-mouse_wheel_zoom_step)
+		elif Input.is_action_just_pressed("camera_zoom_out"):
+			apply_zoom_delta(mouse_wheel_zoom_step)
 
 	if target == null:
 		return
