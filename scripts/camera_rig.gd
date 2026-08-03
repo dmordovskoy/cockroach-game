@@ -119,6 +119,11 @@ func get_pov_distance() -> float:
 	return _pov_distance
 
 
+func movement_yaw() -> float:
+	var camera_back := camera.global_basis.z
+	return atan2(camera_back.x, camera_back.z)
+
+
 func _apply_pov_transform() -> void:
 	if not is_node_ready() or current_mode != CameraMode.POV:
 		return

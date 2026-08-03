@@ -36,7 +36,8 @@ shadow_enabled = true
 
 [node name="Kitchen" parent="." instance=ExtResource("3_kitchen")]
 
-[node name="Player" parent="." unique_id=636934858 instance=ExtResource("1_playerscene")]
+[node name="Player" parent="." unique_id=636934858 node_paths=PackedStringArray("camera_rig") instance=ExtResource("1_playerscene")]
+camera_rig = NodePath("../CameraRig")
 
 [node name="CameraRig" type="Node3D" parent="." node_paths=PackedStringArray("target")]
 script = ExtResource("2_camerarig")
