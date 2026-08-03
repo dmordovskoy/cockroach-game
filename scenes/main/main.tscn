@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://caihi2i8j36f2" path="res://scripts/camera_rig.gd" id="2_camerarig"]
 [ext_resource type="PackedScene" path="res://scenes/kitchen/kitchen.tscn" id="3_kitchen"]
 [ext_resource type="Script" uid="uid://suxog35i3a2f" path="res://scripts/occluder_fade.gd" id="4_occluder"]
+[ext_resource type="Script" uid="uid://drp4kgkbhmhk0" path="res://scripts/version_label.gd" id="5_version_label"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_top_color = Color(0.003, 0.008, 0.03, 1)
@@ -60,3 +61,25 @@ process_mode = 1
 script = ExtResource("4_occluder")
 target = NodePath("../../../../Player")
 outline_mesh = NodePath("../../../../Player/Cockroach/Head")
+
+[node name="VersionLabel" type="CanvasLayer" parent="."]
+layer = 100
+script = ExtResource("5_version_label")
+
+[node name="Label" type="Label" parent="VersionLabel"]
+modulate = Color(1, 1, 1, 0.45)
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -112.0
+offset_top = -32.0
+offset_right = -12.0
+offset_bottom = -10.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 24
+text = "dev"
+horizontal_alignment = 2
