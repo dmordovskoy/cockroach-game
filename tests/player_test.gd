@@ -1,6 +1,15 @@
 extends GdUnitTestSuite
 
 
+class StubCameraRig:
+	extends CameraRig
+
+	var stub_yaw := 0.0
+
+	func movement_yaw() -> float:
+		return stub_yaw
+
+
 func after_test() -> void:
 	Input.action_release("move_left")
 	Input.action_release("move_right")
@@ -52,6 +61,72 @@ func test_moves_left_on_input() -> void:
 	await runner.simulate_frames(30)
 	var player: Player = runner.scene()
 	assert_float(player.velocity.x).is_less(0.0)
+
+
+func test_camera_yaw_rotates_movement_direction() -> void:
+	var runner := scene_runner("res://scenes/player/player.tscn")
+	await runner.simulate_frames(1)
+	var player: Player = runner.scene()
+	var rig := StubCameraRig.new()
+	auto_free(rig)
+	rig.stub_yaw = PI / 2.0
+	player.camera_rig = rig
+	player.velocity = Vector3.ZERO
+
+	Input.action_press("move_up")
+	player._physics_process(1.0 / 60.0)
+
+	assert_float(player.velocity.x).is_less(0.0)
+	assert_float(absf(player.velocity.z)).is_less(0.001)
+	assert_float(player.rotation.y).is_greater(0.0)
+
+
+func test_standalone_player_uses_identity_movement_fallback() -> void:
+	var runner := scene_runner("res://scenes/player/player.tscn")
+	await runner.simulate_frames(1)
+	var player: Player = runner.scene()
+	player.velocity = Vector3.ZERO
+
+	Input.action_press("move_up")
+	player._physics_process(1.0 / 60.0)
+
+	assert_object(player.camera_rig).is_null()
+	assert_float(absf(player.velocity.x)).is_less(0.001)
+	assert_float(player.velocity.z).is_less(0.0)
+
+
+func test_main_player_moves_screen_up_in_isometric_mode() -> void:
+	var runner := scene_runner("res://scenes/main/main.tscn")
+	await runner.simulate_frames(2)
+	var player: Player = runner.scene().get_node("Player")
+	var rig: CameraRig = runner.scene().get_node("CameraRig")
+	player.velocity = Vector3.ZERO
+
+	Input.action_press("move_up")
+	player._physics_process(1.0 / 60.0)
+
+	assert_object(player.camera_rig).is_same(rig)
+	assert_float(player.velocity.x).is_less(0.0)
+	assert_float(player.velocity.z).is_less(0.0)
+	assert_float(absf(player.velocity.x)).is_equal_approx(absf(player.velocity.z), 0.001)
+
+
+func test_pov_move_up_tracks_orbit_heading() -> void:
+	var runner := scene_runner("res://scenes/main/main.tscn")
+	await runner.simulate_frames(2)
+	var player: Player = runner.scene().get_node("Player")
+	var rig: CameraRig = runner.scene().get_node("CameraRig")
+	rig.set_mode(CameraRig.CameraMode.POV)
+	rig.apply_orbit_delta(Vector2(-75.0, 0.0))
+	player.velocity = Vector3.ZERO
+
+	Input.action_press("move_up")
+	player._physics_process(1.0 / 60.0)
+
+	var camera_back := rig.camera.global_basis.z
+	var expected_direction := Vector3(-camera_back.x, 0.0, -camera_back.z).normalized()
+	var movement_direction := Vector3(player.velocity.x, 0.0, player.velocity.z).normalized()
+	assert_float(movement_direction.dot(expected_direction)).is_greater(0.999)
 
 
 func test_turns_toward_movement_direction() -> void:

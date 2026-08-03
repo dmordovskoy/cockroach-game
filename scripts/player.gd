@@ -5,11 +5,14 @@ extends CharacterBody3D
 @export var acceleration := 40.0
 @export var turn_speed := 12.0
 @export var jump_velocity := 4.0
+@export var camera_rig: CameraRig
 
 
 func _physics_process(delta: float) -> void:
 	var input := Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	var direction := Vector3(input.x, 0.0, input.y)
+	if camera_rig != null:
+		direction = direction.rotated(Vector3.UP, camera_rig.movement_yaw())
 
 	velocity.x = move_toward(velocity.x, direction.x * speed, acceleration * delta)
 	velocity.z = move_toward(velocity.z, direction.z * speed, acceleration * delta)
