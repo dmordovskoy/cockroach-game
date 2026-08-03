@@ -26,11 +26,21 @@ and CI gate every merge. Humans playtest and merge.
 6. Commit with conventional messages (`feat:` `fix:` `chore:` `docs:` `test:`).
    Push the branch, open **one PR** with `Closes #<issue#>`, fill the PR template.
    Open it **ready for review, never as a draft** — the review bot ignores drafts.
+   Immediately comment `@codex review` on the PR instead of waiting for an implicit
+   review. Treat the bot's 👀 reaction as review in progress. A clean terminal result
+   is either 👍 on the request or any bot-authored clean/no-findings verdict that
+   explicitly applies to the current HEAD commit, provided there are no unresolved
+   review threads. Interpret the verdict semantically instead of matching exact comment
+   text. Poll the PR conversation and threads as well as reactions; never wait solely
+   for an emoji. If no terminal result appears within 10 minutes, refresh all three once
+   and report the review as pending instead of polling forever.
    After pushing, check the working tree back out to `main` (the checkout is shared).
 7. **Never push to `main`. Never merge.** Merging happens after CI, both reviews,
    and the human playtest checklist.
-8. Review feedback arrives as PR comments — fix on the same branch and push;
-   every new commit re-runs all gates.
+8. Review feedback arrives as PR comments — fix on the same branch, push, and resolve
+   each addressed thread; every new commit re-runs all gates. Re-trigger `@codex review`
+   after review-fix commits and verify the final result applies to HEAD with no
+   unresolved threads.
 
 ## Code rules
 
