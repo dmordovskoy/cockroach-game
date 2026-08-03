@@ -10,12 +10,14 @@ const OCCLUDER_GROUP := &"camera_occluder"
 @export_range(0.0, 1.0, 0.05) var target_transparency := 0.65
 @export_range(0.0, 10.0, 0.1) var fade_speed := 3.0
 @export var target: Node3D
+@export var outline_mesh: GeometryInstance3D
 
 var _camera: Camera3D
 var _tracked_meshes: Array[GeometryInstance3D] = []
 
 
 func _ready() -> void:
+	_set_outline_enabled(false)
 	_camera = get_parent() as Camera3D
 	if _camera == null:
 		push_error("OccluderFade must be a child of Camera3D")
@@ -33,6 +35,7 @@ func step(delta: float) -> void:
 
 	_camera.size = camera_size
 	var blocked_meshes := _collect_blocked_meshes()
+	_set_outline_enabled(not blocked_meshes.is_empty())
 	for mesh in blocked_meshes:
 		if not _tracked_meshes.has(mesh):
 			_tracked_meshes.append(mesh)
@@ -94,3 +97,11 @@ func _find_occluder_mesh(body: Node) -> GeometryInstance3D:
 		if mesh != null:
 			return mesh
 	return null
+
+
+func _set_outline_enabled(enabled: bool) -> void:
+	if outline_mesh == null:
+		return
+	var outline_material := outline_mesh.material_overlay as ShaderMaterial
+	if outline_material != null:
+		outline_material.set_shader_parameter("outline_enabled", enabled)

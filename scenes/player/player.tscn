@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_player"]
 [ext_resource type="Script" path="res://scripts/detection.gd" id="2_detection"]
@@ -8,6 +8,34 @@
 [sub_resource type="BoxShape3D" id="BoxShape3D_body"]
 size = Vector3(0.6, 0.25, 1)
 
+[sub_resource type="Shader" id="Shader_occluded_outline"]
+code = "shader_type spatial;
+render_mode unshaded, cull_front, depth_draw_never;
+
+uniform bool outline_enabled = false;
+uniform vec4 outline_color : source_color = vec4(0.72, 0.18, 0.045, 1.0);
+uniform float outline_size = 0.012;
+
+void vertex() {
+	VERTEX += NORMAL * outline_size;
+}
+
+void fragment() {
+	if (!outline_enabled) {
+		discard;
+	}
+	ALBEDO = outline_color.rgb;
+	EMISSION = outline_color.rgb;
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_night_visibility"]
+render_priority = 1
+shader = SubResource("Shader_occluded_outline")
+shader_parameter/outline_enabled = false
+shader_parameter/outline_color = Color(0.72, 0.18, 0.045, 1)
+shader_parameter/outline_size = 0.012
+
 [node name="Player" type="CharacterBody3D"]
 collision_layer = 2
 script = ExtResource("1_player")
@@ -16,6 +44,21 @@ script = ExtResource("1_player")
 position = Vector3(0, 0.175, 0)
 script = ExtResource("4_animator")
 animation_player = NodePath("AnimationPlayer")
+
+[node name="AbdomenCore" parent="Cockroach" index="0"]
+material_overlay = SubResource("ShaderMaterial_night_visibility")
+
+[node name="Head" parent="Cockroach" index="6"]
+material_overlay = SubResource("ShaderMaterial_night_visibility")
+
+[node name="Thorax" parent="Cockroach" index="19"]
+material_overlay = SubResource("ShaderMaterial_night_visibility")
+
+[node name="WingCaseLeft" parent="Cockroach" index="21"]
+material_overlay = SubResource("ShaderMaterial_night_visibility")
+
+[node name="WingCaseRight" parent="Cockroach" index="22"]
+material_overlay = SubResource("ShaderMaterial_night_visibility")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
@@ -53,3 +96,5 @@ custom_minimum_size = Vector2(276, 18)
 layout_mode = 2
 max_value = 1.0
 show_percentage = false
+
+[editable path="Cockroach"]

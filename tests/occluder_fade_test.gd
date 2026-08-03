@@ -60,6 +60,8 @@ func test_scene_fades_counter_and_restores_in_open_floor() -> void:
 	var camera: Camera3D = main.get_node(CAMERA_PATH)
 	var fade: OccluderFade = camera.get_node("OccluderFade")
 	var counter_mesh: MeshInstance3D = main.get_node("Kitchen/SideCounter/MeshInstance3D")
+	var roach_head := player.get_node("Cockroach/Head") as MeshInstance3D
+	var outline_material := roach_head.material_overlay as ShaderMaterial
 	var camera_offset := Vector3(12.0, 10.0, 12.0)
 	var floor_height := player.position.y
 	fade.fade_speed = 100.0
@@ -68,8 +70,10 @@ func test_scene_fades_counter_and_restores_in_open_floor() -> void:
 	camera.global_position = player.position + camera_offset + Vector3(-6.0, 0.0, 0.0)
 	fade.step(1.0 / 60.0)
 	assert_float(counter_mesh.transparency).is_greater(0.0)
+	assert_bool(outline_material.get_shader_parameter("outline_enabled")).is_true()
 
 	player.position = Vector3(0.0, floor_height, 0.0)
 	camera.global_position = player.position + camera_offset + Vector3(-6.0, 0.0, 0.0)
 	fade.step(1.0 / 60.0)
 	assert_float(counter_mesh.transparency).is_equal_approx(0.0, 0.001)
+	assert_bool(outline_material.get_shader_parameter("outline_enabled")).is_false()
