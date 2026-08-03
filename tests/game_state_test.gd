@@ -135,6 +135,31 @@ func test_confirm_action_starts_from_ready() -> void:
 	assert_bool(get_tree().paused).is_false()
 
 
+func test_confirm_action_dismisses_paused_run_overlays() -> void:
+	var runner := scene_runner("res://scenes/main/main.tscn")
+	await runner.simulate_frames(1)
+	var game_state: GameState = runner.scene().get_node("GameState")
+	var run_ui: RunUI = runner.scene().get_node("RunUI")
+	game_state.start_run()
+	game_state.kill_player("Mapped continue")
+
+	Input.action_press("confirm")
+	run_ui.step_input()
+	Input.action_release("confirm")
+	assert_int(game_state.state).is_equal(GameState.State.PLAYING)
+
+	for death_number in range(5):
+		game_state.kill_player("Death %d" % death_number)
+		if game_state.state == GameState.State.DEAD:
+			game_state.dismiss_death()
+	Input.action_press("confirm")
+	run_ui.step_input()
+	Input.action_release("confirm")
+
+	assert_int(game_state.state).is_equal(GameState.State.READY)
+	assert_int(game_state.lives).is_equal(5)
+
+
 func test_death_overlay_loses_heart_and_continue_respawns() -> void:
 	var runner := scene_runner("res://scenes/main/main.tscn")
 	await runner.simulate_frames(1)
@@ -144,10 +169,12 @@ func test_death_overlay_loses_heart_and_continue_respawns() -> void:
 	var player: Player = main.get_node("Player")
 	var detection: Detection = player.get_node("Detection")
 	var spawn_point := main.get_node("KitchenSpawn") as Marker3D
+	var camera_rig: CameraRig = main.get_node("CameraRig")
 	game_state.start_run()
 	player.global_position = Vector3(9.0, 0.0, -9.0)
 	player.velocity = Vector3(2.0, 0.0, 1.0)
 	detection.level = 0.7
+	camera_rig.global_position = player.global_position
 
 	game_state.kill_player("Caught in the cookie jar")
 
@@ -164,6 +191,7 @@ func test_death_overlay_loses_heart_and_continue_respawns() -> void:
 	assert_vector(player.global_position).is_equal(spawn_point.global_position)
 	assert_vector(player.velocity).is_equal(Vector3.ZERO)
 	assert_float(detection.level).is_equal(0.0)
+	assert_vector(camera_rig.global_position).is_equal(spawn_point.global_position)
 	assert_bool(get_tree().paused).is_false()
 
 

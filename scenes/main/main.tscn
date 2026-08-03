@@ -66,12 +66,13 @@ script = ExtResource("4_occluder")
 target = NodePath("../../../../Player")
 outline_mesh = NodePath("../../../../Player/Cockroach/Head")
 
-[node name="GameState" type="Node" parent="." node_paths=PackedStringArray("player", "spawn_point", "detection")]
+[node name="GameState" type="Node" parent="." node_paths=PackedStringArray("player", "spawn_point", "detection", "camera_rig")]
 process_mode = 3
 script = ExtResource("5_game_state")
 player = NodePath("../Player")
 spawn_point = NodePath("../KitchenSpawn")
 detection = NodePath("../Player/Detection")
+camera_rig = NodePath("../CameraRig")
 
 [node name="RunUI" parent="." node_paths=PackedStringArray("game_state") instance=ExtResource("6_run_ui")]
 game_state = NodePath("../GameState")

@@ -41,6 +41,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	var key_event := event as InputEventKey
 	if key_event == null or not key_event.pressed or key_event.echo:
 		return
+	# The run-loop spec requires any keyboard key; confirm also handles mapped inputs.
 	if game_state.state == GameState.State.DEAD:
 		game_state.dismiss_death()
 		get_viewport().set_input_as_handled()
@@ -52,8 +53,15 @@ func _unhandled_input(event: InputEvent) -> void:
 func step_input() -> void:
 	if game_state == null:
 		return
-	if game_state.state == GameState.State.READY and Input.is_action_just_pressed("confirm"):
-		game_state.start_run()
+	if not Input.is_action_just_pressed("confirm"):
+		return
+	match game_state.state:
+		GameState.State.READY:
+			game_state.start_run()
+		GameState.State.DEAD:
+			game_state.dismiss_death()
+		GameState.State.GAME_OVER:
+			game_state.dismiss_game_over()
 
 
 func _on_state_changed(new_state: int) -> void:

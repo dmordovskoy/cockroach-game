@@ -11,6 +11,7 @@ enum State { READY, PLAYING, DEAD, GAME_OVER }
 @export var player: CharacterBody3D
 @export var spawn_point: Marker3D
 @export var detection: Detection
+@export var camera_rig: CameraRig
 
 var state := State.READY
 var lives := 0
@@ -107,6 +108,8 @@ func _respawn_player() -> void:
 		player.global_transform = _initial_player_transform
 	player.force_update_transform()
 	player.velocity = Vector3.ZERO
+	if camera_rig != null:
+		camera_rig.global_position = player.global_position
 
 
 func _set_state(new_state: int) -> void:
