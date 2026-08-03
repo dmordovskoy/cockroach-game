@@ -48,6 +48,11 @@ func is_lit() -> bool:
 	return not _overlapping_zones.is_empty()
 
 
+func reset() -> void:
+	_overlapping_zones.clear()
+	level = 0.0
+
+
 func _on_light_zone_body_entered(body: Node3D, zone: Area3D) -> void:
 	if body == _player and zone not in _overlapping_zones:
 		_overlapping_zones.append(zone)
