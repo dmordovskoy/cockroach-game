@@ -60,13 +60,14 @@ func _collect_blocked_meshes() -> Array[GeometryInstance3D]:
 	if world == null:
 		return blocked_meshes
 
+	var ray_target := target.global_position + TARGET_HEIGHT_OFFSET
+	var view_direction := -_camera.global_basis.z.normalized()
+	var view_depth := maxf((ray_target - _camera.global_position).dot(view_direction), 0.0)
+	var ray_origin := ray_target - view_direction * view_depth
 	var exclusions: Array[RID] = []
 	for _hit_index in MAX_RAY_HITS:
 		var query := PhysicsRayQueryParameters3D.create(
-			_camera.global_position,
-			target.global_position + TARGET_HEIGHT_OFFSET,
-			WORLD_COLLISION_MASK,
-			exclusions
+			ray_origin, ray_target, WORLD_COLLISION_MASK, exclusions
 		)
 		query.collide_with_areas = false
 		var hit := world.direct_space_state.intersect_ray(query)

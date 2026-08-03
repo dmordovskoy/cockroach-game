@@ -42,17 +42,11 @@ func test_scene_fades_counter_and_restores_in_open_floor() -> void:
 	fade.fade_speed = 100.0
 
 	player.position = Vector3(5.0, floor_height, -5.0)
-	camera.position = player.position + camera_offset
-	for _frame in 30:
-		await runner.simulate_frames(1, 16)
-		if counter_mesh.transparency > 0.0:
-			break
+	camera.position = player.position + camera_offset + Vector3(-6.0, 0.0, 0.0)
+	fade.step(1.0 / 60.0)
 	assert_float(counter_mesh.transparency).is_greater(0.0)
 
 	player.position = Vector3(0.0, floor_height, 0.0)
-	camera.position = player.position + camera_offset
-	for _frame in 30:
-		await runner.simulate_frames(1, 16)
-		if is_zero_approx(counter_mesh.transparency):
-			break
+	camera.position = player.position + camera_offset + Vector3(-6.0, 0.0, 0.0)
+	fade.step(1.0 / 60.0)
 	assert_float(counter_mesh.transparency).is_equal_approx(0.0, 0.001)
