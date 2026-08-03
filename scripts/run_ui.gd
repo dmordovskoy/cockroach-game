@@ -43,10 +43,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	# The run-loop spec requires any keyboard key; confirm also handles mapped inputs.
 	if game_state.state == GameState.State.DEAD:
-		game_state.dismiss_death()
+		_dismiss_after_input_frame(&"dismiss_death")
 		get_viewport().set_input_as_handled()
 	elif game_state.state == GameState.State.GAME_OVER:
-		game_state.dismiss_game_over()
+		_dismiss_after_input_frame(&"dismiss_game_over")
 		get_viewport().set_input_as_handled()
 
 
@@ -62,6 +62,12 @@ func step_input() -> void:
 			game_state.dismiss_death()
 		GameState.State.GAME_OVER:
 			game_state.dismiss_game_over()
+
+
+func _dismiss_after_input_frame(method: StringName) -> void:
+	await get_tree().process_frame
+	if is_instance_valid(game_state):
+		game_state.call_deferred(method)
 
 
 func _on_state_changed(new_state: int) -> void:

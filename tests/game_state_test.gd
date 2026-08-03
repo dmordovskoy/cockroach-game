@@ -160,6 +160,34 @@ func test_confirm_action_dismisses_paused_run_overlays() -> void:
 	assert_int(game_state.lives).is_equal(5)
 
 
+func test_debug_keys_used_as_any_key_do_not_trigger_again_after_dismissal() -> void:
+	var runner := scene_runner("res://scenes/main/main.tscn")
+	await runner.simulate_frames(1)
+	var game_state: GameState = runner.scene().get_node("GameState")
+	var run_ui: RunUI = runner.scene().get_node("RunUI")
+	game_state.start_run()
+
+	var debug_actions := ["debug_die", "debug_game_over"]
+	var debug_keys := [KEY_K, KEY_G]
+	for index in range(debug_actions.size()):
+		game_state.kill_player("Set up death overlay")
+		var expected_lives := game_state.max_lives - index - 1
+		Input.action_press(debug_actions[index])
+		var key_event := InputEventKey.new()
+		key_event.physical_keycode = debug_keys[index]
+		key_event.pressed = true
+		run_ui._unhandled_input(key_event)
+
+		game_state.step_input()
+		assert_int(game_state.state).is_equal(GameState.State.DEAD)
+		assert_int(game_state.lives).is_equal(expected_lives)
+
+		Input.action_release(debug_actions[index])
+		await runner.simulate_frames(2)
+		assert_int(game_state.state).is_equal(GameState.State.PLAYING)
+		assert_int(game_state.lives).is_equal(expected_lives)
+
+
 func test_death_overlay_loses_heart_and_continue_respawns() -> void:
 	var runner := scene_runner("res://scenes/main/main.tscn")
 	await runner.simulate_frames(1)
