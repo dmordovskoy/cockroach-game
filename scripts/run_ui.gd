@@ -6,6 +6,8 @@ const LOST_HEART_COLOR := Color(0.25, 0.08, 0.08, 0.45)
 
 @export var game_state: GameState
 
+var _input_transition_pending := false
+
 @onready var start_overlay: ColorRect = $StartOverlay
 @onready var death_overlay: ColorRect = $DeathOverlay
 @onready var game_over_overlay: ColorRect = $GameOverOverlay
@@ -23,9 +25,9 @@ func _ready() -> void:
 	game_state.state_changed.connect(_on_state_changed)
 	game_state.lives_changed.connect(_on_lives_changed)
 	game_state.death_presented.connect(_on_death_presented)
-	start_button.pressed.connect(game_state.start_run)
-	continue_button.pressed.connect(game_state.dismiss_death)
-	game_over_button.pressed.connect(game_state.dismiss_game_over)
+	start_button.pressed.connect(_on_start_button_pressed)
+	continue_button.pressed.connect(_on_continue_button_pressed)
+	game_over_button.pressed.connect(_on_game_over_button_pressed)
 	_on_lives_changed(game_state.lives, game_state.max_lives)
 	_on_death_presented(game_state.death_reason)
 	_on_state_changed(game_state.state)
@@ -65,9 +67,32 @@ func step_input() -> void:
 
 
 func _call_after_input_frame(method: StringName) -> void:
+	if _input_transition_pending:
+		return
+	_input_transition_pending = true
 	await get_tree().process_frame
 	if is_instance_valid(game_state):
 		game_state.call_deferred(method)
+	_input_transition_pending = false
+
+
+func _call_from_button(method: StringName) -> void:
+	if Input.is_action_just_pressed("confirm"):
+		_call_after_input_frame(method)
+	elif is_instance_valid(game_state):
+		game_state.call(method)
+
+
+func _on_start_button_pressed() -> void:
+	_call_from_button(&"start_run")
+
+
+func _on_continue_button_pressed() -> void:
+	_call_from_button(&"dismiss_death")
+
+
+func _on_game_over_button_pressed() -> void:
+	_call_from_button(&"dismiss_game_over")
 
 
 func _on_state_changed(new_state: int) -> void:

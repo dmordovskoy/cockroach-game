@@ -267,6 +267,29 @@ func test_fifth_death_shows_game_over_and_return_restores_start() -> void:
 	assert_bool(get_tree().paused).is_true()
 
 
+func test_keyboard_game_over_button_stops_on_start_screen() -> void:
+	var runner := scene_runner("res://scenes/main/main.tscn")
+	await runner.simulate_frames(1)
+	var game_state: GameState = runner.scene().get_node("GameState")
+	var run_ui: RunUI = runner.scene().get_node("RunUI")
+	game_state.start_run()
+	for death_number in range(5):
+		game_state.kill_player("Death %d" % death_number)
+		if game_state.state == GameState.State.DEAD:
+			game_state.dismiss_death()
+
+	Input.action_press("confirm")
+	run_ui.game_over_button.pressed.emit()
+	run_ui.step_input()
+	assert_int(game_state.state).is_equal(GameState.State.GAME_OVER)
+
+	Input.action_release("confirm")
+	await runner.simulate_frames(3)
+	assert_int(game_state.state).is_equal(GameState.State.READY)
+	assert_bool(run_ui.start_overlay.visible).is_true()
+	assert_bool(get_tree().paused).is_true()
+
+
 func _create_game_state() -> GameState:
 	var world: Node3D = auto_free(Node3D.new())
 	add_child(world)
