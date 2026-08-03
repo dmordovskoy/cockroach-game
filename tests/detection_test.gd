@@ -49,13 +49,34 @@ func test_detection_stays_lit_until_all_overlapping_zones_exit() -> void:
 	assert_bool(detection.is_lit()).is_true()
 
 
+func test_detection_reset_clears_level_and_overlapping_zones() -> void:
+	var world: Node3D = auto_free(Node3D.new())
+	add_child(world)
+	var zone := LightZoneScript.new()
+	world.add_child(zone)
+	var player := CharacterBody3D.new()
+	world.add_child(player)
+	var detection := DetectionScript.new()
+	player.add_child(detection)
+
+	zone.body_entered.emit(player)
+	detection.level = 0.75
+	detection.reset()
+
+	assert_float(detection.level).is_equal(0.0)
+	assert_int(detection.light_zone_count).is_equal(0)
+	assert_bool(detection.is_lit()).is_false()
+
+
 func test_main_scene_fills_in_light_and_drains_in_shadow() -> void:
 	var runner := scene_runner("res://scenes/main/main.tscn")
 	await runner.simulate_frames(2)
 	var main := runner.scene()
+	var game_state: GameState = main.get_node("GameState")
 	var player: Player = main.get_node("Player")
 	var detection := player.get_node("Detection") as DetectionScript
 	var light_zone := main.get_node("Kitchen/WindowLightZone") as Area3D
+	game_state.start_run()
 	detection.set_physics_process(false)
 
 	player.global_position = Vector3(

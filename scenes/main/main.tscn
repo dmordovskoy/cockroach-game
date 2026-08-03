@@ -4,6 +4,8 @@
 [ext_resource type="Script" uid="uid://caihi2i8j36f2" path="res://scripts/camera_rig.gd" id="2_camerarig"]
 [ext_resource type="PackedScene" path="res://scenes/kitchen/kitchen.tscn" id="3_kitchen"]
 [ext_resource type="Script" uid="uid://suxog35i3a2f" path="res://scripts/occluder_fade.gd" id="4_occluder"]
+[ext_resource type="Script" uid="uid://4ky8cvj41i0m" path="res://scripts/game_state.gd" id="5_game_state"]
+[ext_resource type="PackedScene" uid="uid://bu6ttv5gy2toc" path="res://scenes/ui/run_ui.tscn" id="6_run_ui"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_top_color = Color(0.003, 0.008, 0.03, 1)
@@ -36,6 +38,8 @@ shadow_enabled = true
 
 [node name="Kitchen" parent="." instance=ExtResource("3_kitchen")]
 
+[node name="KitchenSpawn" type="Marker3D" parent="."]
+
 [node name="Player" parent="." unique_id=636934858 node_paths=PackedStringArray("camera_rig") instance=ExtResource("1_playerscene")]
 camera_rig = NodePath("../CameraRig")
 
@@ -60,3 +64,13 @@ process_mode = 1
 script = ExtResource("4_occluder")
 target = NodePath("../../../../Player")
 outline_mesh = NodePath("../../../../Player/Cockroach/Head")
+
+[node name="GameState" type="Node" parent="." node_paths=PackedStringArray("player", "spawn_point", "detection")]
+process_mode = 3
+script = ExtResource("5_game_state")
+player = NodePath("../Player")
+spawn_point = NodePath("../KitchenSpawn")
+detection = NodePath("../Player/Detection")
+
+[node name="RunUI" parent="." node_paths=PackedStringArray("game_state") instance=ExtResource("6_run_ui")]
+game_state = NodePath("../GameState")

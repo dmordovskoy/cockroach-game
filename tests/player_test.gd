@@ -140,7 +140,10 @@ func test_turns_toward_movement_direction() -> void:
 func test_jump_rises_lands_and_rejects_midair_impulse() -> void:
 	var runner := scene_runner("res://scenes/main/main.tscn")
 	await runner.simulate_frames(2)
+	var game_state: GameState = runner.scene().get_node("GameState")
 	var player: Player = runner.scene().get_node("Player")
+	game_state.start_run()
+	await runner.simulate_frames(2)
 	_simulate_until_grounded(player)
 	assert_bool(player.is_on_floor()).is_true()
 	var floor_height := player.position.y
@@ -167,7 +170,10 @@ func test_jump_rises_lands_and_rejects_midair_impulse() -> void:
 func test_horizontal_movement_unaffected_while_airborne() -> void:
 	var runner := scene_runner("res://scenes/main/main.tscn")
 	await runner.simulate_frames(2)
+	var game_state: GameState = runner.scene().get_node("GameState")
 	var player: Player = runner.scene().get_node("Player")
+	game_state.start_run()
+	await runner.simulate_frames(2)
 	_simulate_until_grounded(player)
 	var starting_position := player.position
 

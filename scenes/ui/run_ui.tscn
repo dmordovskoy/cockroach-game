@@ -1,0 +1,155 @@
+[gd_scene load_steps=2 format=3 uid="uid://bu6ttv5gy2toc"]
+
+[ext_resource type="Script" uid="uid://rn42cy11fqvr" path="res://scripts/run_ui.gd" id="1_run_ui"]
+
+[node name="RunUI" type="CanvasLayer"]
+process_mode = 3
+layer = 50
+script = ExtResource("1_run_ui")
+
+[node name="StartOverlay" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.008, 0.012, 0.026, 0.94)
+
+[node name="Center" type="CenterContainer" parent="StartOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="StartOverlay/Center"]
+layout_mode = 2
+theme_override_constants/separation = 18
+alignment = 1
+
+[node name="Title" type="Label" parent="StartOverlay/Center/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.72, 0.24, 1)
+theme_override_font_sizes/font_size = 46
+text = "COCKROACH GAME"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="StartOverlay/Center/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.8, 0.88, 1)
+theme_override_font_sizes/font_size = 18
+text = "One tiny roach. One very dangerous kitchen."
+horizontal_alignment = 1
+
+[node name="StartButton" type="Button" parent="StartOverlay/Center/VBox"]
+custom_minimum_size = Vector2(220, 52)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 22
+text = "Start Game"
+
+[node name="DeathOverlay" type="ColorRect" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.025, 0.015, 0.045, 0.84)
+
+[node name="Center" type="CenterContainer" parent="DeathOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="DeathOverlay/Center"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="Title" type="Label" parent="DeathOverlay/Center/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.42, 0.2, 1)
+theme_override_font_sizes/font_size = 42
+text = "A ROACH FALLS!"
+horizontal_alignment = 1
+
+[node name="Cause" type="Label" parent="DeathOverlay/Center/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.94, 0.9, 0.84, 1)
+theme_override_font_sizes/font_size = 20
+text = "Cause: Unknown kitchen mishap"
+horizontal_alignment = 1
+
+[node name="Prompt" type="Label" parent="DeathOverlay/Center/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.65, 0.72, 1)
+theme_override_font_sizes/font_size = 15
+text = "Press any key to scuttle again"
+horizontal_alignment = 1
+
+[node name="ContinueButton" type="Button" parent="DeathOverlay/Center/VBox"]
+custom_minimum_size = Vector2(220, 52)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 21
+text = "Continue"
+
+[node name="GameOverOverlay" type="ColorRect" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.095, 0.002, 0.008, 0.97)
+
+[node name="Center" type="CenterContainer" parent="GameOverOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="GameOverOverlay/Center"]
+layout_mode = 2
+theme_override_constants/separation = 18
+alignment = 1
+
+[node name="Title" type="Label" parent="GameOverOverlay/Center/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.08, 0.1, 1)
+theme_override_font_sizes/font_size = 56
+text = "GAME OVER"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="GameOverOverlay/Center/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.72, 0.68, 1)
+theme_override_font_sizes/font_size = 23
+text = "The kitchen wins… this time."
+horizontal_alignment = 1
+
+[node name="ReturnButton" type="Button" parent="GameOverOverlay/Center/VBox"]
+custom_minimum_size = Vector2(240, 52)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 21
+text = "Back to Start"
+
+[node name="Hearts" type="HBoxContainer" parent="."]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -230.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = 58.0
+grow_horizontal = 0
+theme_override_constants/separation = 5
+alignment = 2
