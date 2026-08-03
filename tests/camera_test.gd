@@ -56,6 +56,17 @@ func test_camera_target_resolves() -> void:
 	assert_object(rig.target).is_not_null()
 
 
+func test_movement_yaw_matches_active_camera_heading() -> void:
+	var runner := scene_runner("res://scenes/main/main.tscn")
+	await runner.simulate_frames(2)
+	var rig: CameraRig = runner.scene().get_node("CameraRig")
+
+	assert_float(rig.movement_yaw()).is_equal_approx(PI / 4.0, 0.001)
+	rig.set_mode(CameraRig.CameraMode.POV)
+	rig.apply_orbit_delta(Vector2(-50.0, 0.0))
+	assert_float(rig.movement_yaw()).is_equal_approx(rig.spring_arm.rotation.y, 0.001)
+
+
 func test_camera_follow_converges_on_target() -> void:
 	var camera_offset := Vector3(12.0, 10.0, 12.0)
 	var world: Node3D = auto_free(Node3D.new())
