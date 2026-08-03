@@ -177,6 +177,25 @@ func test_confirm_action_dismisses_paused_run_overlays() -> void:
 	assert_int(game_state.lives).is_equal(5)
 
 
+func test_focus_navigation_key_uses_early_any_key_dismissal() -> void:
+	var runner := scene_runner("res://scenes/main/main.tscn")
+	await runner.simulate_frames(1)
+	var game_state: GameState = runner.scene().get_node("GameState")
+	var run_ui: RunUI = runner.scene().get_node("RunUI")
+	game_state.start_run()
+	game_state.kill_player("Focused continue")
+	run_ui.continue_button.grab_focus()
+
+	var tab_event := InputEventKey.new()
+	tab_event.physical_keycode = KEY_TAB
+	tab_event.pressed = true
+	run_ui._input(tab_event)
+	assert_int(game_state.state).is_equal(GameState.State.DEAD)
+
+	await runner.simulate_frames(2)
+	assert_int(game_state.state).is_equal(GameState.State.PLAYING)
+
+
 func test_debug_keys_used_as_any_key_do_not_trigger_again_after_dismissal() -> void:
 	var runner := scene_runner("res://scenes/main/main.tscn")
 	await runner.simulate_frames(1)
@@ -193,7 +212,7 @@ func test_debug_keys_used_as_any_key_do_not_trigger_again_after_dismissal() -> v
 		var key_event := InputEventKey.new()
 		key_event.physical_keycode = debug_keys[index]
 		key_event.pressed = true
-		run_ui._unhandled_input(key_event)
+		run_ui._input(key_event)
 
 		game_state.step_input()
 		assert_int(game_state.state).is_equal(GameState.State.DEAD)

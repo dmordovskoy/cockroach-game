@@ -37,7 +37,7 @@ func _process(_delta: float) -> void:
 	step_input()
 
 
-func _unhandled_input(event: InputEvent) -> void:
+func _input(event: InputEvent) -> void:
 	if game_state == null:
 		return
 	var key_event := event as InputEventKey
