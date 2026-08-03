@@ -34,6 +34,11 @@ jobs:
           ref: main
           lfs: true
 
+      - name: Inject release version
+        run: |
+          sed -i '' "s/^config\/version=.*/config\/version=\"$VERSION\"/" project.godot
+          grep -Fx "config/version=\"$VERSION\"" project.godot
+
       - name: Install Godot and export templates
         run: |
           curl -fsSL -o godot.zip "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_macos.universal.zip"
