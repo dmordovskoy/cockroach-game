@@ -10,6 +10,7 @@ func before_test() -> void:
 
 func after_test() -> void:
 	Input.action_release("confirm")
+	Input.action_release("jump")
 	Input.action_release("debug_die")
 	Input.action_release("debug_game_over")
 	get_tree().paused = false
@@ -121,18 +122,26 @@ func test_main_boots_paused_on_visible_start_screen_and_button_starts() -> void:
 	assert_bool(main.get_node("Player").can_process()).is_true()
 
 
-func test_confirm_action_starts_from_ready() -> void:
+func test_confirm_action_starts_after_shared_jump_input_clears() -> void:
 	var runner := scene_runner("res://scenes/main/main.tscn")
 	await runner.simulate_frames(1)
 	var game_state: GameState = runner.scene().get_node("GameState")
 	var run_ui: RunUI = runner.scene().get_node("RunUI")
+	var player: Player = runner.scene().get_node("Player")
 
 	Input.action_press("confirm")
+	Input.action_press("jump")
 	run_ui.step_input()
+	assert_int(game_state.state).is_equal(GameState.State.READY)
+	assert_bool(get_tree().paused).is_true()
+
 	Input.action_release("confirm")
+	Input.action_release("jump")
+	await runner.simulate_frames(2)
 
 	assert_int(game_state.state).is_equal(GameState.State.PLAYING)
 	assert_bool(get_tree().paused).is_false()
+	assert_float(player.velocity.y).is_less(player.jump_velocity)
 
 
 func test_confirm_action_dismisses_paused_run_overlays() -> void:
@@ -140,13 +149,19 @@ func test_confirm_action_dismisses_paused_run_overlays() -> void:
 	await runner.simulate_frames(1)
 	var game_state: GameState = runner.scene().get_node("GameState")
 	var run_ui: RunUI = runner.scene().get_node("RunUI")
+	var player: Player = runner.scene().get_node("Player")
 	game_state.start_run()
 	game_state.kill_player("Mapped continue")
 
 	Input.action_press("confirm")
+	Input.action_press("jump")
 	run_ui.step_input()
+	assert_int(game_state.state).is_equal(GameState.State.DEAD)
 	Input.action_release("confirm")
+	Input.action_release("jump")
+	await runner.simulate_frames(2)
 	assert_int(game_state.state).is_equal(GameState.State.PLAYING)
+	assert_float(player.velocity.y).is_less(player.jump_velocity)
 
 	for death_number in range(5):
 		game_state.kill_player("Death %d" % death_number)
@@ -154,7 +169,9 @@ func test_confirm_action_dismisses_paused_run_overlays() -> void:
 			game_state.dismiss_death()
 	Input.action_press("confirm")
 	run_ui.step_input()
+	assert_int(game_state.state).is_equal(GameState.State.GAME_OVER)
 	Input.action_release("confirm")
+	await runner.simulate_frames(2)
 
 	assert_int(game_state.state).is_equal(GameState.State.READY)
 	assert_int(game_state.lives).is_equal(5)
