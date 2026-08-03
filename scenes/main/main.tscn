@@ -44,5 +44,6 @@ size = 6.5
 far = 100.0
 
 [node name="OccluderFade" type="Node" parent="CameraRig/SpringArm3D/Camera3D" node_paths=PackedStringArray("target")]
+process_mode = 1
 script = ExtResource("4_occluder")
 target = NodePath("../../../../Player")

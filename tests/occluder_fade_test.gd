@@ -31,6 +31,27 @@ func test_main_scene_uses_close_tunable_camera() -> void:
 	assert_float(fade.camera_size).is_equal_approx(6.5, 0.001)
 
 
+func test_isometric_mode_processes_occluder_fade_automatically() -> void:
+	var runner := scene_runner("res://scenes/main/main.tscn")
+	await runner.simulate_frames(2)
+	var main := runner.scene()
+	var player: Player = main.get_node("Player")
+	var rig: CameraRig = main.get_node("CameraRig")
+	var camera: Camera3D = main.get_node(CAMERA_PATH)
+	var fade: OccluderFade = camera.get_node("OccluderFade")
+	var counter_mesh: MeshInstance3D = main.get_node("Kitchen/SideCounter/MeshInstance3D")
+	var floor_height := player.position.y
+	fade.fade_speed = 100.0
+
+	player.position = Vector3(5.0, floor_height, -5.0)
+	rig.global_position = player.global_position
+	camera.position = Vector3(6.0, 10.0, 12.0)
+	await runner.simulate_frames(2)
+
+	assert_bool(fade.can_process()).is_true()
+	assert_float(counter_mesh.transparency).is_greater(0.0)
+
+
 func test_scene_fades_counter_and_restores_in_open_floor() -> void:
 	var runner := scene_runner("res://scenes/main/main.tscn")
 	await runner.simulate_frames(2)
