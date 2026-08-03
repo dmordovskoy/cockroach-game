@@ -187,7 +187,7 @@ mesh = SubResource("BoxMesh_wall_vertical")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="EastWall"]
 shape = SubResource("BoxShape3D_wall_vertical")
 
-[node name="BackCounter" type="StaticBody3D" parent="."]
+[node name="BackCounter" type="StaticBody3D" parent="." groups=["camera_occluder"]]
 position = Vector3(5.5, 4, -8.25)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="BackCounter"]
@@ -196,7 +196,7 @@ mesh = SubResource("BoxMesh_counter_back")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="BackCounter"]
 shape = SubResource("BoxShape3D_counter_back")
 
-[node name="SideCounter" type="StaticBody3D" parent="."]
+[node name="SideCounter" type="StaticBody3D" parent="." groups=["camera_occluder"]]
 position = Vector3(12, 4, -3)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="SideCounter"]
@@ -205,7 +205,7 @@ mesh = SubResource("BoxMesh_counter_side")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="SideCounter"]
 shape = SubResource("BoxShape3D_counter_side")
 
-[node name="Fridge" type="StaticBody3D" parent="."]
+[node name="Fridge" type="StaticBody3D" parent="." groups=["camera_occluder"]]
 position = Vector3(-11, 4.3, -8)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Fridge"]
@@ -214,7 +214,7 @@ mesh = SubResource("BoxMesh_fridge")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Fridge"]
 shape = SubResource("BoxShape3D_fridge")
 
-[node name="TableTop" type="StaticBody3D" parent="."]
+[node name="TableTop" type="StaticBody3D" parent="." groups=["camera_occluder"]]
 position = Vector3(-5, 3.45, 3)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="TableTop"]
@@ -223,7 +223,7 @@ mesh = SubResource("BoxMesh_table_top")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="TableTop"]
 shape = SubResource("BoxShape3D_table_top")
 
-[node name="TableLegNorthWest" type="StaticBody3D" parent="."]
+[node name="TableLegNorthWest" type="StaticBody3D" parent="." groups=["camera_occluder"]]
 position = Vector3(-8.3, 1.6, 1.2)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="TableLegNorthWest"]
@@ -232,7 +232,7 @@ mesh = SubResource("BoxMesh_table_leg")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="TableLegNorthWest"]
 shape = SubResource("BoxShape3D_table_leg")
 
-[node name="TableLegNorthEast" type="StaticBody3D" parent="."]
+[node name="TableLegNorthEast" type="StaticBody3D" parent="." groups=["camera_occluder"]]
 position = Vector3(-1.7, 1.6, 1.2)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="TableLegNorthEast"]
@@ -241,7 +241,7 @@ mesh = SubResource("BoxMesh_table_leg")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="TableLegNorthEast"]
 shape = SubResource("BoxShape3D_table_leg")
 
-[node name="TableLegSouthWest" type="StaticBody3D" parent="."]
+[node name="TableLegSouthWest" type="StaticBody3D" parent="." groups=["camera_occluder"]]
 position = Vector3(-8.3, 1.6, 4.8)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="TableLegSouthWest"]
@@ -250,7 +250,7 @@ mesh = SubResource("BoxMesh_table_leg")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="TableLegSouthWest"]
 shape = SubResource("BoxShape3D_table_leg")
 
-[node name="TableLegSouthEast" type="StaticBody3D" parent="."]
+[node name="TableLegSouthEast" type="StaticBody3D" parent="." groups=["camera_occluder"]]
 position = Vector3(-1.7, 1.6, 4.8)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="TableLegSouthEast"]
@@ -259,7 +259,7 @@ mesh = SubResource("BoxMesh_table_leg")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="TableLegSouthEast"]
 shape = SubResource("BoxShape3D_table_leg")
 
-[node name="ChairWestLegNorthWest" type="StaticBody3D" parent="."]
+[node name="ChairWestLegNorthWest" type="StaticBody3D" parent="." groups=["camera_occluder"]]
 position = Vector3(-11.65, 1.2, 2.35)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ChairWestLegNorthWest"]
@@ -268,7 +268,7 @@ mesh = SubResource("BoxMesh_chair_leg")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ChairWestLegNorthWest"]
 shape = SubResource("BoxShape3D_chair_leg")
 
-[node name="ChairWestLegNorthEast" type="StaticBody3D" parent="."]
+[node name="ChairWestLegNorthEast" type="StaticBody3D" parent="." groups=["camera_occluder"]]
 position = Vector3(-10.35, 1.2, 2.35)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ChairWestLegNorthEast"]
@@ -277,7 +277,7 @@ mesh = SubResource("BoxMesh_chair_leg")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ChairWestLegNorthEast"]
 shape = SubResource("BoxShape3D_chair_leg")
 
-[node name="ChairWestLegSouthWest" type="StaticBody3D" parent="."]
+[node name="ChairWestLegSouthWest" type="StaticBody3D" parent="." groups=["camera_occluder"]]
 position = Vector3(-11.65, 1.2, 3.65)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ChairWestLegSouthWest"]
@@ -286,7 +286,7 @@ mesh = SubResource("BoxMesh_chair_leg")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ChairWestLegSouthWest"]
 shape = SubResource("BoxShape3D_chair_leg")
 
-[node name="ChairWestLegSouthEast" type="StaticBody3D" parent="."]
+[node name="ChairWestLegSouthEast" type="StaticBody3D" parent="." groups=["camera_occluder"]]
 position = Vector3(-10.35, 1.2, 3.65)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ChairWestLegSouthEast"]
@@ -295,7 +295,7 @@ mesh = SubResource("BoxMesh_chair_leg")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ChairWestLegSouthEast"]
 shape = SubResource("BoxShape3D_chair_leg")
 
-[node name="ChairEastLegNorthWest" type="StaticBody3D" parent="."]
+[node name="ChairEastLegNorthWest" type="StaticBody3D" parent="." groups=["camera_occluder"]]
 position = Vector3(0.35, 1.2, 2.35)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ChairEastLegNorthWest"]
@@ -304,7 +304,7 @@ mesh = SubResource("BoxMesh_chair_leg")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ChairEastLegNorthWest"]
 shape = SubResource("BoxShape3D_chair_leg")
 
-[node name="ChairEastLegNorthEast" type="StaticBody3D" parent="."]
+[node name="ChairEastLegNorthEast" type="StaticBody3D" parent="." groups=["camera_occluder"]]
 position = Vector3(1.65, 1.2, 2.35)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ChairEastLegNorthEast"]
@@ -313,7 +313,7 @@ mesh = SubResource("BoxMesh_chair_leg")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ChairEastLegNorthEast"]
 shape = SubResource("BoxShape3D_chair_leg")
 
-[node name="ChairEastLegSouthWest" type="StaticBody3D" parent="."]
+[node name="ChairEastLegSouthWest" type="StaticBody3D" parent="." groups=["camera_occluder"]]
 position = Vector3(0.35, 1.2, 3.65)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ChairEastLegSouthWest"]
@@ -322,7 +322,7 @@ mesh = SubResource("BoxMesh_chair_leg")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ChairEastLegSouthWest"]
 shape = SubResource("BoxShape3D_chair_leg")
 
-[node name="ChairEastLegSouthEast" type="StaticBody3D" parent="."]
+[node name="ChairEastLegSouthEast" type="StaticBody3D" parent="." groups=["camera_occluder"]]
 position = Vector3(1.65, 1.2, 3.65)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ChairEastLegSouthEast"]
@@ -331,7 +331,7 @@ mesh = SubResource("BoxMesh_chair_leg")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ChairEastLegSouthEast"]
 shape = SubResource("BoxShape3D_chair_leg")
 
-[node name="ChairSouthLegNorthWest" type="StaticBody3D" parent="."]
+[node name="ChairSouthLegNorthWest" type="StaticBody3D" parent="." groups=["camera_occluder"]]
 position = Vector3(-5.65, 1.2, 6.35)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ChairSouthLegNorthWest"]
@@ -340,7 +340,7 @@ mesh = SubResource("BoxMesh_chair_leg")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ChairSouthLegNorthWest"]
 shape = SubResource("BoxShape3D_chair_leg")
 
-[node name="ChairSouthLegNorthEast" type="StaticBody3D" parent="."]
+[node name="ChairSouthLegNorthEast" type="StaticBody3D" parent="." groups=["camera_occluder"]]
 position = Vector3(-4.35, 1.2, 6.35)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ChairSouthLegNorthEast"]
@@ -349,7 +349,7 @@ mesh = SubResource("BoxMesh_chair_leg")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ChairSouthLegNorthEast"]
 shape = SubResource("BoxShape3D_chair_leg")
 
-[node name="ChairSouthLegSouthWest" type="StaticBody3D" parent="."]
+[node name="ChairSouthLegSouthWest" type="StaticBody3D" parent="." groups=["camera_occluder"]]
 position = Vector3(-5.65, 1.2, 7.65)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ChairSouthLegSouthWest"]
@@ -358,7 +358,7 @@ mesh = SubResource("BoxMesh_chair_leg")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ChairSouthLegSouthWest"]
 shape = SubResource("BoxShape3D_chair_leg")
 
-[node name="ChairSouthLegSouthEast" type="StaticBody3D" parent="."]
+[node name="ChairSouthLegSouthEast" type="StaticBody3D" parent="." groups=["camera_occluder"]]
 position = Vector3(-4.35, 1.2, 7.65)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ChairSouthLegSouthEast"]
