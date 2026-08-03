@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="1_playerscene"]
 [ext_resource type="Script" uid="uid://caihi2i8j36f2" path="res://scripts/camera_follow.gd" id="2_camfollow"]
 [ext_resource type="PackedScene" path="res://scenes/kitchen/kitchen.tscn" id="3_kitchen"]
+[ext_resource type="Script" uid="uid://suxog35i3a2f" path="res://scripts/occluder_fade.gd" id="4_occluder"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 
@@ -29,7 +30,11 @@ shadow_enabled = true
 [node name="Camera3D" type="Camera3D" parent="." unique_id=1792301300 node_paths=PackedStringArray("target")]
 transform = Transform3D(0.707107, -0.353553, 0.612372, 0, 0.866025, 0.5, -0.707107, -0.353553, 0.612372, 12, 10, 12)
 projection = 1
-size = 16.0
+size = 6.5
 far = 100.0
 script = ExtResource("2_camfollow")
 target = NodePath("../Player")
+
+[node name="OccluderFade" type="Node" parent="Camera3D" node_paths=PackedStringArray("target")]
+script = ExtResource("4_occluder")
+target = NodePath("../../Player")
