@@ -1,5 +1,7 @@
 extends GdUnitTestSuite
 
+const CAMERA_PATH := "CameraRig/SpringArm3D/Camera3D"
+
 
 func test_fade_step_rises_falls_and_clamps() -> void:
 	var fade: OccluderFade = auto_free(OccluderFade.new())
@@ -21,7 +23,7 @@ func test_fade_step_rises_falls_and_clamps() -> void:
 func test_main_scene_uses_close_tunable_camera() -> void:
 	var runner := scene_runner("res://scenes/main/main.tscn")
 	await runner.simulate_frames(2)
-	var camera: Camera3D = runner.scene().get_node("Camera3D")
+	var camera: Camera3D = runner.scene().get_node(CAMERA_PATH)
 	var fade: OccluderFade = camera.get_node("OccluderFade")
 
 	assert_int(camera.projection).is_equal(Camera3D.PROJECTION_ORTHOGONAL)
@@ -34,7 +36,7 @@ func test_scene_fades_counter_and_restores_in_open_floor() -> void:
 	await runner.simulate_frames(2)
 	var main := runner.scene()
 	var player: Player = main.get_node("Player")
-	var camera: Camera3D = main.get_node("Camera3D")
+	var camera: Camera3D = main.get_node(CAMERA_PATH)
 	var fade: OccluderFade = camera.get_node("OccluderFade")
 	var counter_mesh: MeshInstance3D = main.get_node("Kitchen/SideCounter/MeshInstance3D")
 	var camera_offset := Vector3(12.0, 10.0, 12.0)
@@ -42,11 +44,11 @@ func test_scene_fades_counter_and_restores_in_open_floor() -> void:
 	fade.fade_speed = 100.0
 
 	player.position = Vector3(5.0, floor_height, -5.0)
-	camera.position = player.position + camera_offset + Vector3(-6.0, 0.0, 0.0)
+	camera.global_position = player.position + camera_offset + Vector3(-6.0, 0.0, 0.0)
 	fade.step(1.0 / 60.0)
 	assert_float(counter_mesh.transparency).is_greater(0.0)
 
 	player.position = Vector3(0.0, floor_height, 0.0)
-	camera.position = player.position + camera_offset + Vector3(-6.0, 0.0, 0.0)
+	camera.global_position = player.position + camera_offset + Vector3(-6.0, 0.0, 0.0)
 	fade.step(1.0 / 60.0)
 	assert_float(counter_mesh.transparency).is_equal_approx(0.0, 0.001)

@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://qwbmdh8pq1yl"]
 
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="1_playerscene"]
-[ext_resource type="Script" uid="uid://caihi2i8j36f2" path="res://scripts/camera_follow.gd" id="2_camfollow"]
+[ext_resource type="Script" uid="uid://caihi2i8j36f2" path="res://scripts/camera_rig.gd" id="2_camerarig"]
 [ext_resource type="PackedScene" path="res://scenes/kitchen/kitchen.tscn" id="3_kitchen"]
 [ext_resource type="Script" uid="uid://suxog35i3a2f" path="res://scripts/occluder_fade.gd" id="4_occluder"]
 
@@ -27,14 +27,22 @@ shadow_enabled = true
 
 [node name="Player" parent="." unique_id=636934858 instance=ExtResource("1_playerscene")]
 
-[node name="Camera3D" type="Camera3D" parent="." unique_id=1792301300 node_paths=PackedStringArray("target")]
+[node name="CameraRig" type="Node3D" parent="." node_paths=PackedStringArray("target")]
+script = ExtResource("2_camerarig")
+target = NodePath("../Player")
+
+[node name="SpringArm3D" type="SpringArm3D" parent="CameraRig"]
+process_mode = 4
+collision_mask = 1
+margin = 0.05
+spring_length = 2.0
+
+[node name="Camera3D" type="Camera3D" parent="CameraRig/SpringArm3D" unique_id=1792301300]
 transform = Transform3D(0.707107, -0.353553, 0.612372, 0, 0.866025, 0.5, -0.707107, -0.353553, 0.612372, 12, 10, 12)
 projection = 1
 size = 6.5
 far = 100.0
-script = ExtResource("2_camfollow")
-target = NodePath("../Player")
 
-[node name="OccluderFade" type="Node" parent="Camera3D" node_paths=PackedStringArray("target")]
+[node name="OccluderFade" type="Node" parent="CameraRig/SpringArm3D/Camera3D" node_paths=PackedStringArray("target")]
 script = ExtResource("4_occluder")
-target = NodePath("../../Player")
+target = NodePath("../../../../Player")
