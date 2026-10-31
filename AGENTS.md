@@ -2,13 +2,21 @@
 
 Godot 4.7, GDScript only (no C#). 3D rendering, gameplay locked to the XZ plane.
 Game concept and mechanics roadmap: `docs/design.md`.
+Single source of project rules for every agent (Claude reads it via `CLAUDE.md`).
 
-## Your role
+## Roles
 
-You are the **implementation agent**. You receive a GitHub issue containing a spec
-(goal, acceptance criteria, invariants, out of scope). Implement exactly that scope —
-nothing more. Specs are written and PRs reviewed by the architect agent; a review bot
-and CI gate every merge. Humans playtest and merge.
+Specs arrive as GitHub issues (goal, acceptance criteria, invariants, out of scope), written
+and PR-reviewed by the architect agent; a review bot and CI gate every merge; humans playtest
+and merge. The agent that picks up an issue implements exactly that scope — nothing more.
+
+## Layout
+
+- `scenes/<feature>/*.tscn` — one folder per feature; main scene is `scenes/main/main.tscn`
+- `scripts/` — GDScript
+- `tests/` — gdUnit4 suites, `tests/<name>_test.gd`
+- `assets/` — imported runtime assets (glTF in `models/`, plus `textures/`, `audio/`)
+- `blender/` — `.blend` sources, never imported (`.gdignore`); export `.glb` to `assets/models/`
 
 ## Per-issue workflow
 
@@ -17,7 +25,7 @@ and CI gate every merge. Humans playtest and merge.
    Then announce: `gh issue comment <issue#> --body "Started — branch <branch-name>"` and
    `gh issue edit <issue#> --add-label in-progress` (the linked PR supersedes this later;
    remove the label when the PR opens)
-3. Implement within scope. Your territory: `scenes/`, `scripts/`, `tests/`, `assets/`.
+3. Implement within scope. Implementation territory: `scenes/`, `scripts/`, `tests/`, `assets/`.
    **Never touch** `.github/`, `.claude/`, `tools/`, `docs/` unless the issue explicitly says so.
 4. Every gameplay feature gets at least one gdUnit4 test in `tests/<name>_test.gd`.
 5. Verify locally before pushing — all must pass:
@@ -35,12 +43,13 @@ and CI gate every merge. Humans playtest and merge.
    for an emoji. If no terminal result appears within 10 minutes, refresh all three once
    and report the review as pending instead of polling forever.
    After pushing, check the working tree back out to `main` (the checkout is shared).
-7. **Never push to `main`. Never merge.** Merging happens after CI, both reviews,
-   and the human playtest checklist.
+7. **Never push to `main`. Never merge.** Merge gates: CI green (Lint, Tests), review bot
+   resolved, human playtest checklist in the PR done; then squash merge.
 8. Review feedback arrives as PR comments — fix on the same branch, push, and resolve
    each addressed thread; every new commit re-runs all gates. Re-trigger `@codex review`
    after review-fix commits and verify the final result applies to HEAD with no
    unresolved threads.
+9. Merging never releases. Release = Actions → Release workflow with a `vX.Y.Z` tag.
 
 ## Code rules
 
@@ -48,7 +57,8 @@ and CI gate every merge. Humans playtest and merge.
 - Input only via actions defined in `project.godot` — never hardcoded keys
 - Movement/physics in `_physics_process`
 - Static geometry: `StaticBody3D` + `MeshInstance3D` + `CollisionShape3D` — no CSG nodes in committed scenes
-- Formatting: tabs, two blank lines between top-level definitions (`gdformat` conventions)
+- Formatting: tabs, two blank lines between top-level definitions (`gdformat` conventions);
+  code must pass `gdformat --check` and `gdlint` (scripts/, tests/)
 
 ## Scene-file pitfalls (learned the hard way — PR #2)
 
@@ -67,13 +77,14 @@ and CI gate every merge. Humans playtest and merge.
 - Time-dependent logic: **never** assert on frame counts across many frames — CI frame
   pacing differs wildly from local. Call the logic directly with a fixed delta instead
   (see `test_camera_follow_converges_on_target` in `tests/camera_test.gd`)
-- Headless run crashes writing `user://`? Prefix: `HOME="$TMPDIR/gdhome" ./tools/test.sh`
+- Headless run crashes writing `user://` (sandboxed sessions)? Prefix: `HOME="$TMPDIR/gdhome" ./tools/test.sh`
 
-## Your local config
+## Local agent config
 
-Your workspace config lives in `.codex/` — it is machine-local and gitignored.
-Permission or approval settings are **never repo work**: no branches, no commits,
-no PRs for them, and never bundle project-file edits with config changes.
+Agent workspace config lives in `.codex/` and `.claude/` — machine-local; `.codex/` and
+`.claude/gh`, `.claude/settings.local.json` are gitignored. Permission or approval settings
+are **never repo work**: no branches, no commits, no PRs for them, and never bundle
+project-file edits with config changes.
 
 ## Environment
 
