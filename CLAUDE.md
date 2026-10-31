@@ -1,33 +1,9 @@
-# Cockroach Game
+# CLAUDE.md
 
-Godot 4.4+, GDScript only (no C#). 3D rendering, gameplay locked to the XZ plane.
-Game concept and mechanics roadmap: `docs/design.md`.
-Implementation-agent (Codex CLI) workflow contract: `AGENTS.md` — keep the two in sync.
+@AGENTS.md
 
-## Layout
+AGENTS.md is the single source of project rules. Change rules there, not here; this file holds only Claude-specific additions.
 
-- `scenes/<feature>/*.tscn` — one folder per feature; main scene is `scenes/main/main.tscn`
-- `scripts/` — GDScript
-- `assets/` — imported runtime assets (glTF in `models/`, plus `textures/`, `audio/`)
-- `blender/` — `.blend` sources, never imported (`.gdignore`); export `.glb` to `assets/models/`
+## Sandboxed sessions
 
-## Rules
-
-- snake_case for files/dirs, PascalCase for node names
-- Typed GDScript (`:=`, typed params/returns)
-- Input via actions defined in `project.godot`, never hardcoded keys
-- Movement/physics in `_physics_process`
-- Code must pass `gdformat --check` and `gdlint` (scripts/, tests/)
-
-## Workflow
-
-- Every change: Issue → branch `feat/<issue#>-slug` → one PR (`Closes #N`) → squash merge
-- Merge gates: CI green (Lint, Tests), Codex review resolved, playtest checklist in PR done
-- Merging never releases. Release = Actions → Release workflow with a `vX.Y.Z` tag
-- Never push to main directly
-
-## Testing
-
-- gdUnit4, suites in `tests/*_test.gd`; scene behavior via `scene_runner`
-- Every gameplay feature gets at least one scene_runner test
-- Headless run: `./tools/test.sh` (sandboxed sessions: prefix with `HOME="$TMPDIR/gdhome"`)
+Headless Godot runs need `HOME="$TMPDIR/gdhome"` in front of `./tools/test.sh` and `godot` (already in the repo's allow list).
